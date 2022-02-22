@@ -1,0 +1,13 @@
+title Earth DID Method Deactivate Operation
+
+participant User
+participant Cosmos Blockchain `chainspace`
+participant Cosmos Earth DID Module `DID Registry`
+participant Cosmos Chain Registry
+
+User->Cosmos Earth DID Module `DID Registry`: Deactivate DID
+Cosmos Earth DID Module `DID Registry`->Cosmos Earth DID Module `DID Registry`: set metadata attribute 'active = False'
+Cosmos Earth DID Module `DID Registry`->Cosmos Chain Registry: Lookup correct 'chainspace'
+Cosmos Chain Registry->Cosmos Earth DID Module `DID Registry`: Return 'chainspace' value
+Cosmos Earth DID Module `DID Registry`->Cosmos Blockchain `chainspace`: Write transaction to update DID status for 'chainspace'
+Cosmos Earth DID Module `DID Registry`->User: Confirmation of DID deactivation
