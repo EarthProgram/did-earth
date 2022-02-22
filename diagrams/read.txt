@@ -1,0 +1,18 @@
+title Earth DID Method Read Operation
+
+participant User
+participant Cosmos Asset Module
+participant Cosmos Blockchain `chainspace`
+participant Cosmos Earth DID Module `DID Registry`
+participant Cosmos Chain Registry
+participant Cosmos Blockchain Remote `chainspace`
+
+User->Cosmos Earth DID Module `DID Registry`: Resolve DID for did:earth:ixo:nft:12345
+Cosmos Earth DID Module `DID Registry`->Cosmos Chain Registry: Lookup correct 'chainspace' value for DID did:earth:ixo:nft:12345
+Cosmos Chain Registry->Cosmos Earth DID Module `DID Registry`: Return correct 'chainspace' value for DID as ixo
+Cosmos Earth DID Module `DID Registry`->Cosmos Blockchain `chainspace`: Lookup 'internal-namespace-identifier' for DID did:earth:ixo:nft
+Cosmos Blockchain `chainspace`->Cosmos Earth DID Module `DID Registry`: Return 'internal-namespace-identifier' for DID asset module nft including metadata
+Cosmos Earth DID Module `DID Registry`->Cosmos Earth DID Module `DID Registry`: Verify metadata 'active=True' to ensure DID is not in deactivated state
+Cosmos Earth DID Module `DID Registry`->Cosmos Asset Module: Lookup 'unique-asset-id' for DID did:earth:ixo:nft:12345
+Cosmos Asset Module->Cosmos Earth DID Module `DID Registry`: Return 'unique-asset-id' for DID from NFT asset module for 'unique-asset-id'=12345
+Cosmos Earth DID Module `DID Registry`->User: Return DID Document for DID did:earth:ixo:nft:12345
