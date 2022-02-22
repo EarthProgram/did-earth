@@ -1,0 +1,21 @@
+title Earth DID Method Create Operation
+
+participant User
+participant Cosmos Asset Module
+participant Cosmos Blockchain `chainspace`
+participant Cosmos Earth DID Module `DID Registry`
+participant Cosmos Chain Registry
+participant Cosmos Blockchain Remote `chainspace`
+
+User->Cosmos Asset Module: Create asset
+Cosmos Asset Module->Cosmos Blockchain `chainspace`: Create asset transaction with optional linked data
+Cosmos Blockchain `chainspace`->Cosmos Asset Module: Asset registered with unique-asset-id and tx ID
+Cosmos Asset Module->Cosmos Earth DID Module `DID Registry`: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
+Cosmos Earth DID Module `DID Registry`->Cosmos Blockchain `chainspace`: Lookup namespace from internal-namespace-identifier
+Cosmos Blockchain `chainspace`->Cosmos Earth DID Module `DID Registry`: Return namespace
+Cosmos Earth DID Module `DID Registry`->Cosmos Earth DID Module `DID Registry`: Generate Earth DID method compliant DID
+Cosmos Earth DID Module `DID Registry`->Cosmos Asset Module: Return fully-qualified Earth DID method compliant DID. (did:earth:ixo:nft:1234567)
+Cosmos Asset Module->Cosmos Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
+Cosmos Asset Module->User: Return DID to User for storage?
+
+note over User, Cosmos Asset Module: Or will the DID be regenerated together with the DID as and when required?
