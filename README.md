@@ -388,19 +388,18 @@ Services can be defined in a DIDDoc to express means of communicating with the D
 DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See [method specification](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
 
 #### Create DID (Register)
-
 ```mermaid
 sequenceDiagram
-DID Creator->Asset Module: Create asset
-Asset Module->Application Chain: Create asset transaction with optional linked data
+DID Creator->>Asset Module: Create asset
+Asset Module->>Application Chain: Create asset transaction with optional linked data
 Application Chain->Asset Module: Asset registered with unique-asset-id and tx ID
-Asset Module->DID Registry: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
-DID Registry->Application Chain: Lookup namespace from internal-namespace-identifier
-Application Chain->DID Registry: Return namespace
-DID Registry->DID Registry: Generate Earth DID method compliant DID
-DID Registry->Asset Module: Return fully-qualified Earth DID method compliant DID. (did:earth:ixo:nft:1234567)
-Asset Module->Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
-Asset Module->DID Creator: Return DID to User for storage?
+Asset Module->>DID Registry: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
+DID Registry->>Application Chain: Lookup namespace from internal-namespace-identifier
+Application Chain->>DID Registry: Return namespace
+DID Registry->>DID Registry: Generate Earth DID method compliant DID
+DID Registry->>Asset Module: Return fully-qualified Earth DID method compliant DID. (did:earth:ixo:nft:1234567)
+Asset Module->>Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
+Asset Module->>DID Creator: Return DID to User for storage?
 
 Note over DID Creator, Asset Module: Or will the DID be regenerated together with the DID as and when required?
 ```
