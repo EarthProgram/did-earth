@@ -501,6 +501,16 @@ This operation deactivate DID records using the did:earth method.
 
 #### Deactive DID
 
+```mermaid
+sequenceDiagram
+DID Controller->>DID Registry: Deactivate DID
+DID Registry->>DID Registry: set metadata attribute 'active = False'
+DID Registry->>Chain Registry: Lookup correct 'chainspace'
+Chain Registry->>DID Registry: Return 'chainspace' value
+DID Registry->>Application Chain: Write transaction to update DID status for 'chainspace'
+DID Registry->>DID Controller: Confirmation of DID deactivation
+```
+
 A DID can be deactivated using the gRPC message:
 The operation MUST be executed by an authorized controller of the DID.
 
