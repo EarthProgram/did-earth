@@ -388,6 +388,22 @@ Services can be defined in a DIDDoc to express means of communicating with the D
 DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See [method specification](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
 
 #### Create DID (Register)
+```mermaid
+sequenceDiagram
+DID Creator->>Asset Module: Create asset
+Asset Module->>Application Chain: Create asset transaction with optional linked data
+Application Chain->Asset Module: Asset registered with unique-asset-id and tx ID
+Asset Module->>DID Registry: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
+DID Registry->>Application Chain: Lookup namespace from internal-namespace-identifier
+Application Chain->>DID Registry: Return namespace
+DID Registry->>DID Registry: Generate Earth DID method compliant DID
+DID Registry->>Asset Module: Return fully-qualified Earth DID method compliant DID. (did:earth:ixo:nft:1234567)
+Asset Module->>Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
+Asset Module->>DID Creator: Return DID to User for storage?
+
+Note over DID Creator, Asset Module: Or will the DID be regenerated together with the DID as and when required?
+```
+
 The objective of the IID method is to allow any application developer to include the `did:earth` method in Cosmos modules. Most modules (e.g. NFT, bank, tx) already keep state and events related to assets created and managed by the module. IIDs can be created by any module as an additional capability to enrich assets and related information that exist on-chain and off-chain.
 
 Any developer is free to implement the 'did:earth' method as a DID and on-chain asset enrichment capability inside any Cosmos module.
@@ -431,6 +447,20 @@ WriteRequest{
 ```
 
 #### Read DID (Resolve and Verify)
+
+```mermaid
+sequenceDiagram
+User->>DID Registry: Resolve DID for did:earth:ixo:nft:12345
+DID Registry->>Chain Registry: Lookup correct 'chainspace' value for DID did:earth:ixo:nft:12345
+Chain Registry->>DID Registry: Return correct 'chainspace' value for DID as ixo
+DID Registry->>Application Chain: Lookup 'internal-namespace-identifier' for DID did:earth:ixo:nft
+Application Chain->> DID Registry: Return 'internal-namespace-identifier' for DID asset module nft including metadata
+DID Registry->>DID Registry: Verify metadata 'active=True' to ensure DID is not in deactivated state
+DID Registry->>Asset Module: Lookup 'unique-asset-id' for DID did:earth:ixo:nft:12345
+Asset Module->>DID Registry: Return 'unique-asset-id' for DID from NFT asset module for 'unique-asset-id'=12345
+DID Registry->>User: Return DID Document for DID did:earth:ixo:nft:12345
+```
+
 To resolve DID earth method DID Documents the `QueryIdentifierDocument` operation fetch a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
 
 A DID can be resolved using the gRPC message:
@@ -500,6 +530,16 @@ WriteRequest{
 This operation deactivate DID records using the did:earth method.
 
 #### Deactive DID
+
+```mermaid
+sequenceDiagram
+DID Controller->>DID Registry: Deactivate DID
+DID Registry->>DID Registry: set metadata attribute 'active = False'
+DID Registry->>Chain Registry: Lookup correct 'chainspace'
+Chain Registry->>DID Registry: Return 'chainspace' value
+DID Registry->>Application Chain: Write transaction to update DID status for 'chainspace'
+DID Registry->>DID Controller: Confirmation of DID deactivation
+```
 
 A DID can be deactivated using the gRPC message:
 The operation MUST be executed by an authorized controller of the DID.
