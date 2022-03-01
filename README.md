@@ -447,18 +447,19 @@ WriteRequest{
 ```
 
 #### Read DID (Resolve and Verify)
-
+Example flow for `did:earth:ixo:nft:12345`, an asset hosted by the NFT module on the ixo application chain.
 ```mermaid
 sequenceDiagram
-User->>DID Registry: Resolve DID for did:earth:ixo:nft:12345
-DID Registry->>Chain Registry: Lookup correct 'chainspace' value for DID did:earth:ixo:nft:12345
-Chain Registry->>DID Registry: Return correct 'chainspace' value for DID as ixo
-DID Registry->>Application Chain: Lookup 'internal-namespace-identifier' for DID did:earth:ixo:nft
-Application Chain->> DID Registry: Return 'internal-namespace-identifier' for DID asset module nft including metadata
-DID Registry->>DID Registry: Verify metadata 'active=True' to ensure DID is not in deactivated state
-DID Registry->>Asset Module: Lookup 'unique-asset-id' for DID did:earth:ixo:nft:12345
-Asset Module->>DID Registry: Return 'unique-asset-id' for DID from NFT asset module for 'unique-asset-id'=12345
-DID Registry->>User: Return DID Document for DID did:earth:ixo:nft:12345
+autonumber
+User->>Cosmos DID Registry: Resolve `did:earth:ixo:nft:12345`
+Cosmos DID Registry->>Chain Registry: Lookup correct 'chainspace' value for `did:earth:ixo:nft:12345`
+Chain Registry->>Cosmos DID Registry: Return route to ixo DID Registry 
+Cosmos DID Registry->>User: Route to ixo DID Registry
+User->>Ixo DID Registry:  Resolve DID for `did:earth:ixo:nft:12345`
+Ixo DID Registry->>User : Return route to ixo NFT module
+User->>ixo NFT Module: Resolve DID for `did:earth:ixo:nft:12345`
+ixo NFT Module->>ixo NFT Module: Construct DID Document based on current chain state
+ixo NFT Module->>User: Return DID Document for DID `did:earth:ixo:nft:12345`
 ```
 
 To resolve DID earth method DID Documents the `QueryIdentifierDocument` operation fetch a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
