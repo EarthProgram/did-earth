@@ -24,7 +24,7 @@ The `chainspace` is defined as a string that identifies a specific Cosmos blockc
 
 The `namespace` is defined as an alphanumeric string that identifies a specific Cosmos module in the `chainspace` (e.g. "nft", "bank", "staking") where the DID reference is stored.
 
-[Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values. Every Cosmos blockchain consist of a genesis file that define the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
+[Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values. Every Cosmos blockchain consist of a genesis file that defines the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
 
 For each Cosmos blockchain there will be an entry in the Cosmos Chain Registry that includes a file called `chain.json`. Each `chain.json` file will have two entries, one representing the `mainnet` and another representing the `testnet` of the Cosmos blochain `chainspace`. The `chain_name` of either the `mainnet` or `testnet` can be used to represent the `chainspace` in the earth DID method. The `chain-id` contained in the `chain.json` will be extracted for each `chain-name` to identify the correct Cosmos blockchain network to connect to. 
 
@@ -409,7 +409,7 @@ The objective of the IID method is to allow any application developer to include
 Any developer is free to implement the 'did:earth' method as a DID and on-chain asset enrichment capability inside any Cosmos module.
 DID records created by various Cosmos module developers will be stored in an internal DID registry of the module as part of the module state. DID records can change state from trigger events by the linked asset.
 
-Below is an example of create operation with the IDD interface used by did:earth.
+Below is an example of create operation with the IID interface used by did:earth.
 
 This operation creates a new DID using the did:earth method along with associated DID Document representation.
 
@@ -462,7 +462,7 @@ ixo NFT Module->>ixo NFT Module: Construct DID Document based on current chain s
 ixo NFT Module->>User: Return DID Document for DID `did:earth:ixo:nft:12345`
 ```
 
-To resolve DID earth method DID Documents the `QueryIdentifierDocument` operation fetch a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
+To resolve DID earth method DID Documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
 
 A DID can be resolved using the gRPC message:
 ```golang
@@ -528,9 +528,9 @@ WriteRequest{
 
 
 #### Revoke DID
-This operation deactivate DID records using the did:earth method.
+This operation deactivates DID records using the did:earth method.
 
-#### Deactive DID
+#### Deactivate DID
 
 ```mermaid
 sequenceDiagram
