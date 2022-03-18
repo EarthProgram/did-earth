@@ -527,6 +527,50 @@ WriteRequest{
 }
 ```
 
+#### Transfer DID
+
+```mermaid
+sequenceDiagram
+autonumber 
+participant User
+participant Web Browser
+participant NFT DAPP
+participant Wallet
+participant Cosmos DID Registry (running on Cosmos Hub)
+participant Chain Registry API
+participant ixo DID Registry
+participant ixo NFT Module
+
+User->>Web Browser: Go get an NFT
+Web Browser->>NFT DAPP: Browse NFTs
+NFT DAPP-->>Web Browser: Show NFTs
+Web Browser-->>User: Display NFTs
+User->>Web Browser: Buy NFT
+Web Browser->>NFT DAPP: Buy NFT
+NFT DAPP->>Cosmos DID Registry (running on Cosmos Hub): Resolve NFT IID
+Cosmos DID Registry (running on Cosmos Hub)-->>NFT DAPP: Linked Resource Reference
+NFT DAPP->>Chain Registry API: Get chain definition
+Chain Registry API-->>NFT DAPP: Return chain.json
+NFT DAPP->>ixo DID Registry: Resolve NFT IID
+ixo DID Registry-->>NFT DAPP: Asset Module Reference
+NFT DAPP->>ixo NFT Module: Resolve NFT IID
+ixo NFT Module-->>NFT DAPP: Return DID Document
+NFT DAPP->>NFT DAPP: Generate transfer transaction
+NFT DAPP->>Web Browser: Request tx signature
+Web Browser->>Wallet: Request tx signature
+Wallet->>User: Display Transaction Request
+User-->>Wallet: Approve Transaction
+Wallet->>Wallet: Sign Transaction
+Wallet-->>Web Browser: Signed Transaction
+Web Browser-->>NFT DAPP: Transfer signed transaction
+NFT DAPP->>ixo NFT Module: Transfer Ownership
+ixo NFT Module->>ixo NFT Module: Update NFT owner on chain
+ixo NFT Module-->>NFT DAPP: Transaction result
+NFT DAPP-->>Web Browser: Transaction success
+Web Browser-->>User: Display NFT transfer success
+
+
+```
 
 #### Revoke DID
 This operation deactivates DID records using the did:earth method.
