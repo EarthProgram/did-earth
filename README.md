@@ -15,36 +15,41 @@ DID Methods which conform to the IID specification resolve to DID Document repre
 ### DID Method Name
 The namestring that shall identify this DID `method-name` is: `earth`.
 
+An example `did:earth` method identifier is `did:earth:version:chainspace:namespace:unique-id`.
+
 A DID that uses this method MUST begin with the following prefix `did:earth`. The prefix string MUST be in lowercase. The remainder of the DID after the prefix, is specified below:
 
 #### Method Specific Identifier
-The DID `earth` method-specific identifier (`method-specific-id`) is made up of a `chainspace` and a `namespace` component. 
+The DID `earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
+
+The `version` is defined as a number that identifies a specific version of the `did:earth` method (e.g. 1, 2, 3 etc.). The version number enable future enhancements of the DID method implementations.
 
 The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
 
 The `namespace` is defined as an alphanumeric string that identifies a specific Cosmos module in the `chainspace` (e.g. "nft", "bank", "staking") where the DID reference is stored.
 
-[Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values. Every Cosmos blockchain consist of a genesis file that defines the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
+To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the earth DID method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
-For each Cosmos blockchain there will be an entry in the Cosmos Chain Registry that includes a file called `chain.json`. Each `chain.json` file will have two entries, one representing the `mainnet` and another representing the `testnet` of the Cosmos blochain `chainspace`. The `chain_name` of either the `mainnet` or `testnet` can be used to represent the `chainspace` in the earth DID method. The `chain-id` contained in the `chain.json` will be extracted for each `chain-name` to identify the correct Cosmos blockchain network to connect to. 
+The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values and can be programmatically queried via an [API](https://registry.cosmos.directory/). 
 
-> To support did:earth, any Cosmos application chain MAY add an entry in the Cosmos Chain Registry. Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the earth DID method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to. 
+> Every Cosmos blockchain consist of a genesis file that defines the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be a unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
 
-Two cryptogaphic suites will be available for the earth DID method, namely `Secp256k1` and `Ed25519`.
+> For each Cosmos blockchain there will be an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) that includes a file called `chain.json`. Each `chain.json` file will have two entries, one representing the `mainnet` and another representing the `testnet` of the Cosmos blockhain `chainspace`. The `chain_name` entry of either the `mainnet` or `testnet` can be used to represent the `chainspace` in the earth DID method. The `chain-id` contained in the `chain.json` will be extracted for each `chain-name` to identify the correct Cosmos blockchain network to connect to. 
 
-NOTE: not sure if the below is relevant for the earth DID method
-A did:earth DID must be unique by having the unique-id component be derived from the initial public key of the DID. For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
+>Two cryptogaphic suites will be available for the earth DID method, namely `Secp256k1` and `Ed25519`.
 
-A did:earth DID must be unique by having the unique-id component be derived from the initial public key of the DID. For an Ed25519 public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
-
-
-https://w3c.github.io/did-core/#did-syntax
+The `did:earth` method support offline creation of DIDs.
+An offline generated `did:earth` DID must be unique by having the `unique-id` component be derived from the initial public key of the DID. 
+> For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
+> multibase(multicodec(public_key))
 
 #### earth DID method syntax
 ```abnf
-earth-did          = "did:earth:" chainspace ":" namespace ":" unique-id
+earth-did          = "did:earth:" version ":" chainspace ":" namespace ":" unique-id
+version            = 1*version-char
+version-char       = DIGIT
 chainspace         = 1*50chainspace-char
-chainspace-char    = ALPHA / DIGIT
+chainspace-char    = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
 namespace          = 1*50idchar 
 unique-id          = *( *idchar ":" ) 1*idchar
 id-char            = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
@@ -56,35 +61,35 @@ id-char            = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
 A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:earth:impacthub:nft:7Tqg6BwSSWapxgUDm9KKgg
+did:earth:1:impacthub:nft:7Tqg6BwSSWapxgUDm9KKgg
 ```
 
 A DID written to the Regen Cosmos Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:earth:regen:ecocredit:1Kpg3KJPOIarthPWf8HHyy
+did:earth:1:regen:ecocredit:1Kpg3KJPOIarthPWf8HHyy
 ```
 
 A DID written to the Regen `Testnet` Cosmos Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:earth:regentest:ecocredit:1Kpg3KJPOIarthPWf8HHyy
+did:earth:1:regentest:ecocredit:1Kpg3KJPOIarthPWf8HHyy
 ```
 
 A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace` retrieving a specific IID Linked Resource `path`:
 
 ```abnf
-did:earth:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg/myresource
+did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg/myresource
 ```
 
 A DID written to the ixo Cosmos Blockchain network "NFT" `namespace` referencing a specific IID Linked Resource `fragment`:
 
 ```abnf
-did:earth:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
+did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
 ### DID Documents (DIDDocs)
-A DID Document ("DIDDoc") associated with a earth DID is a set of data describing a DID subject. The [representation of a DIDDoc when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
+A DID Document ("DIDDoc") associated with an earth DID is a set of data describing a DID subject. The [representation of a DIDDoc when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
 
 ### Linked Resources
 
@@ -207,12 +212,10 @@ In addition to using the JSON representation production rules, JSON-LD productio
 }
 ```
 
-This minimal DID document is fully conformant with the specification and
-includes a single verification relationship and method: how to
+This minimal DID document is fully conformant with the specification and includes a single verification relationship and method: how to
 authenticate on behalf of the DID Subject.
 
-It is useful to note that Verification Methods can be anything\*, e.g.,
-ed25519, secp256k, etc.
+It is useful to note that Verification Methods can be anything\*, e.g., ed25519, secp256k, etc.
 
 **An equivalent example of minimal IID document would be:**
 
@@ -226,15 +229,15 @@ ed25519, secp256k, etc.
   "https://internft.org/ns/iid/v1"],
 > [replace with the correct w3id/org permalink]
 "https://internft.org/ns/iid/v1"]
-"id": "did::earth:impacthub:nft:abc123",
+"id": "did::earth:1:impacthub:nft:abc123",
 
 "authentication": [{
 
-  "id": "did:earth:impacthub:nft:abc123i#keys-1",
+  "id": "did:earth:1:impacthub:nft:abc123i#keys-1",
 
   "type": "Ed25519VerificationKey2020",
 
-  "controller": "did:earth:impacthub:nft:abc123",
+  "controller": "did:earth:1:impacthub:nft:abc123",
 
   "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
 
@@ -252,15 +255,15 @@ ed25519, secp256k, etc.
 
     "https://internft.org/ns/iid/v1"],
 
-  "id": "did:earth:impacthub:nft:abc123",
+  "id": "did:earth:1:impacthub:nft:abc123",
 
   "authentication": [{
 
-    "id": "did::earth:impacthub:nft:abc123i#keys-1",
+    "id": "did::earth:1:impacthub:nft:abc123i#keys-1",
 
     "type": "Ed25519VerificationKey2020",
 
-    "controller": "did:earth:impacthub:nft:abc123",
+    "controller": "did:earth:1:impacthub:nft:abc123",
 
     "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
 
@@ -268,7 +271,7 @@ ed25519, secp256k, etc.
 
   "service": [{
 
-    "id":"did:earth:impacthub:nft:abc123#mediator",
+    "id":"did:earth:1:impacthub:nft:abc123#mediator",
 
     "type": "polymorphicMediator2021",
 
@@ -278,15 +281,15 @@ ed25519, secp256k, etc.
 
 "linkedResource" : [{
 
-    "id": "did:earth:impacthub:abc123#resourceHashgraph",
+    "id": "did:earth:1:impacthub:abc123#resourceHashgraph",
 
-    "path": "did:earth:impacthub:nft:abc123/resourceHashgraph",
+    "path": "did:earth:1:impacthub:nft:abc123/resourceHashgraph",
 
     "type": "hashgraph",
   
     "proof": "afybeiemxf5abjwjbikoz4mcb3a3dla6ual3jsgpdr4cjr3oz",
 
-    "endpoint" : "did:earth:impacthub:nft:abc123?service=mediator"
+    "endpoint" : "did:earth:1:impacthub:nft:abc123?service=mediator"
 
   }]
 
@@ -299,32 +302,32 @@ ed25519, secp256k, etc.
 
   "@context": ["https://www.w3.org/ns/did/v1",
     "https://internft.org/ns/iid/v1"],
-  "id": "did:ixo:nft:abc123",
+  "id": "did:earth:1:impacthub:nft:abc123",
 
   "verificationMethod": [{
-    "id": "did:earth:impacthub:nft:abc123#keys-1",
+    "id": "did:earth:1:impacthub:nft:abc123#keys-1",
     "type": "Ed25519VerificationKey2020",
-    "controller": "did:earth:impacthub:nft:abc123",
+    "controller": "did:earth:1:impacthub:nft:abc123",
     "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
   }],
 
-  "authentication": "did:earth:impacthub:nft:abc123#keys-1",
-  "capabilityDelegation" : "did:ixo:nft:abc123#keys-1",
-  "capabilityInvocation" : "did:ixo:nft:abc123#keys-1",
+  "authentication": "did:earth:1:impacthub:nft:abc123#keys-1",
+  "capabilityDelegation" : "did:earth:1:impacthub:nft:abc123#keys-1",
+  "capabilityInvocation" : "did:earth:1:impacthub:nft:abc123#keys-1",
 
   "service": [{
-    "id":"did:ixo:nft:abc123#mediator",
+    "id":"did:earth:1:impacthub:nft:abc123#mediator",
     "type": "polymorphicMediator2021",
-    "serviceEndpoint": "http://8zd335ae47dp89pd.onion/iid/mediator/did:example:abc123"
+    "serviceEndpoint": "http://8zd335ae47dp89pd.onion/iid/mediator/did:earth:1:impacthub:nft:abc123"
   }],
 
 "linkedResource" : [{
-    "id": "did:ixo:nft:abc123#resourceHashgraph",
-    "path": "did:ixo:nft:abc123/resourceHashgraph",
+    "id": "did:earth:1:impacthub:nft:abc123#resourceHashgraph",
+    "path": "did:earth:1:impacthub:nft:abc123/resourceHashgraph",
     "type": "hashgraph",
     "rel":"attachments",
     "proof": "afybeiemxf5abjwjbikoz4mcb3a3dla6ual3jsgpdr4cjr3oz",
-    "endpoint" : "did:ixo:nft:abc123?service=mediator"
+    "endpoint" : "did:earth:1:impacthub:nft:abc123?service=mediator"
   }]
 
 }
@@ -351,9 +354,9 @@ encoded public key.
 
 ```jsonc
 {
-  "id": "did:earth:impacthub:nft:abc123#key-0",
+  "id": "did:earth:1:impacthub:nft:abc123#key-0",
   "type": "JsonWebKey2020",
-  "controller": "did:earth:impacthub:nft:abc123",
+  "controller": "did:earth:1:impacthub:nft:abc123",
   "publicKeyJwk": {
     "kty": "OKP",
     // external (property name)
@@ -376,13 +379,11 @@ Services can be defined in a DIDDoc to express means of communicating with the D
 
 ```jsonc
 {
-  "id":"did:ixo:nft:abc123#linked-domain",
+  "id":"did:earth:1:impacthub:nft:abc123#linked-domain",
   "type": "LinkedDomains",
   "serviceEndpoint": "https://bar.example.com"
 }
 ```
-
-
 
 ### DID transaction operations
 DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See [method specification](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
