@@ -9,8 +9,9 @@ By restricting IIDs to on-chain assets, we create a new class of identifier uniq
 
 IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights.
 
-DID Methods which conform to the IID specification resolve to DID Document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
+DID Methods which conform to the IID specification resolve to a DID Document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
+did:earth DIDs are IIDs intended identify assets on cosmos application chains.
 
 ### DID Method Name
 The namestring that shall identify this DID `method-name` is: `earth`.
