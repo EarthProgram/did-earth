@@ -21,15 +21,15 @@ An example `did:earth` method identifier is `did:earth:version:chainspace:namesp
 A DID that uses this method MUST begin with the following prefix `did:earth`. The prefix string MUST be in lowercase. The remainder of the DID after the prefix, is specified below:
 
 #### Method Specific Identifier
-The DID `earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
+The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
 
-The `version` is defined as a number that identifies a specific version of the `did:earth` method (e.g. 1, 2, 3 etc.). The version number enable future enhancements of the DID method implementations.
+The `version` is defined as a number that identifies a specific version of the `did:earth` method specification (e.g. 1, 2, 3 etc.). The version number enables future enhancements to the specification defining `did:earth` identifiers.
 
 The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
 
 The `namespace` is defined as an alphanumeric string that identifies a specific Cosmos module in the `chainspace` (e.g. "nft", "bank", "staking") where the DID reference is stored.
 
-To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the earth DID method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
+To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
 The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values and can be programmatically queried via an [API](https://registry.cosmos.directory/). 
 
@@ -41,10 +41,11 @@ The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be us
 
 The `did:earth` method support offline creation of DIDs.
 An offline generated `did:earth` DID must be unique by having the `unique-id` component be derived from the initial public key of the DID. 
+
 > For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
 > multibase(multicodec(public_key))
 
-#### earth DID method syntax
+#### did:earth method syntax
 ```abnf
 earth-did          = "did:earth:" version ":" chainspace ":" namespace ":" unique-id
 version            = 1*version-char
@@ -94,15 +95,11 @@ A DID Document ("DIDDoc") associated with an earth DID is a set of data describi
 
 ### Linked Resources
 
-The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
+The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
 
 Resources may be provided in-line or by secure reference. Inline resources are appropriate only for use cases that need to directly include the resource in the IID Document. In many cases, this is a privacy problem. However, for some use cases, resources must be specified for on-chain execution, which justifies the added bytes and potential disclosure risk. The resource descriptor provides for a flexible representation of various mime types, compression, and encoding, as required for the use.
 
-This approach allows token owners to manage privacy in three key ways:
-
-1.  Avoids posting potentially sensitive information on-chain in an unavoidably public and irrevocable manner.
-2.  Provides a service endpoint that can apply appropriate privacy and security checks before revealing information.
-3.  The hashgraph resource descriptor type obscures not only the content of the linked resource, but also the quantity of resource objects.
+> Note: The below para could be moved to security considerations I think
 
 Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
 
@@ -624,6 +621,19 @@ WriteRequest{
 ### Security Considerations
 
 ### Privacy Considerations
+
+The `did:earth` method is a fully compliant IID and DID. As such the privacy considerations taken into account are applicable to this method. The reader is directed towards the privacy considerations discussed in [section 10 of the W3C DID Core specification](https://w3c.github.io/did-core/#privacy-considerations).
+
+#### Linked Resources
+
+Linked resources within IIDs support privacy in three key three key ways:
+
+1.  Avoids posting potentially sensitive information on-chain in an unavoidably public and irrevocable manner.
+2.  Provides a service endpoint that can apply appropriate privacy and security checks before revealing information.
+3.  The hashgraph resource descriptor type obscures not only the content of the linked resource, but also the quantity of resource objects.
+
+
+> Note: Not sure where this JSON goes. Feels hanging?
 
 ```jsonc
     "proof": [{
