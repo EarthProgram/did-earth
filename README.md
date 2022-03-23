@@ -30,7 +30,7 @@ Implementers SHOULD maintain compatibility with all existing versions likely to 
 
 The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
 
-The `namespace` is defined as an alphanumeric string that identifies a specific Cosmos module in the `chainspace` (e.g. "nft", "bank", "staking") where the DID reference is stored.
+The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
 
 To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
