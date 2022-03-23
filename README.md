@@ -23,7 +23,10 @@ A DID that uses this method MUST begin with the following prefix `did:earth`. Th
 #### Method Specific Identifier
 The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
 
-The `version` is defined as a number that identifies a specific version of the `did:earth` method specification (e.g. 1, 2, 3 etc.). The version number enables future enhancements to the specification defining `did:earth` identifiers.
+The `version` is defined as an integer that identifies a specific version of `did:earth` method operations such as 
+create, read, update, and deactivate. The version number increases by one for each breaking change in the specification, enabling future enhancements to the specification while retaining backwards compatibility for long-lived identifiers. 
+
+Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains, this means supporting the version that was current when the chain first adopted did:earth functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
 
 The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
 
