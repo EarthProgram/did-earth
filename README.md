@@ -50,7 +50,7 @@ An offline generated `did:earth` DID must be unique by having the `unique-id` co
 
 #### did:earth method syntax
 ```abnf
-earth-did          = "did:earth:" version ":" chainspace ":" namespace ":" unique-id
+earth-did          = "did:earth:" chainspace ":" namespace ":" version ":"  unique-id
 version            = 1*version-char
 version-char       = DIGIT
 chainspace         = 1*50chainspace-char
