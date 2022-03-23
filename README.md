@@ -625,26 +625,36 @@ WriteRequest{
 
 ### Privacy Considerations
 
-The `did:earth` method is a fully compliant IID and DID. As such the privacy considerations taken into account are applicable to this method. The reader is directed towards the privacy considerations discussed in [section 10 of the W3C DID Core specification](https://w3c.github.io/did-core/#privacy-considerations).
+#### IIDs are designed to represent on-chain Assets
 
-#### Linked Resources
+IIDs, e.g., did:earth:ixo:nft:1:abc are designed to represent on-chain assets, as such the identifier itself is never used to refer to real-world objects like people, with associated privacy requirements.
 
-Linked resources within IIDs support privacy in three key three key ways:
+#### IID references may refer to people or orgainsations
 
-1.  Avoids posting potentially sensitive information on-chain in an unavoidably public and irrevocable manner.
-2.  Provides a service endpoint that can apply appropriate privacy and security checks before revealing information.
-3.  The hashgraph resource descriptor type obscures not only the content of the linked resource, but also the quantity of resource objects.
+IID references, e.g., did:earth:ixo:nft:1:abc#creator may in fact be used to refer to real people and organizations. As such, care must be taken to ensure that any associated personal data be managed off chain with appropriate privacy mechanisms such as the ability to remove the data from public disclosure.
 
+#### Linked Resources are designed to be privacy-agile
 
-> Note: Not sure where this JSON goes. Feels hanging?
+IID references specified as Linked Resources offer several privacy-agile ways to associate the on-chain asset with arbitrary resources, providing a way for did:earth:ixo:nft:1:abc#creator to refer to an off-chain data store with the sensitive data. For example, an NFT's creator could be specified by a link and a hash to a Verifiable Credential (or a simple JSON file) that states the creator's name. Storing that name on-chain would create a regulatory problem. Linked Resources allow the information to be shared while ensuring the ability to honor requests for deletion.
 
-```jsonc
-    "proof": [{
-            "type": "hash" | "hashgraph" | "hashset",
-            "stage": "raw" | "compressed" | "encrypted" | "encoded",
-            "value": "hash" | "hashgraph" | "hashset"
-            }]
+##### Example of a linked resource that references its creator 
+
+```javascript
+"linkedResource" : {
+  "id" : "#creator",
+  "path": "/creator",
+  "rel":"dc:creator",
+  "type" : "iid:ResourceDescriptor",
+  "proof" : [{
+     "type": "hash",
+     "stage": "encoded",
+     "value" : "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}],
+   "resourceFormat" : "application/did+ld+json",
+   "compression" : "none",
+   "endpoint": "https://earthprogram.directory?listing=did:earth:ixo:nft:1:abc123#owner"
+}
 ```
+
 #### Hash based Linked Resource
 
 #### Hash Graph based Linked Resource
