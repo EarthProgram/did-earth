@@ -9,8 +9,9 @@ By restricting IIDs to on-chain assets, we create a new class of identifier uniq
 
 IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights.
 
-DID Methods which conform to the IID specification resolve to DID Document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
+DID Methods which conform to the IID specification resolve to a DID Document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
+did:earth DIDs are IIDs intended identify assets on cosmos application chains.
 
 ### DID Method Name
 The namestring that shall identify this DID `method-name` is: `earth`.
@@ -20,15 +21,18 @@ An example `did:earth` method identifier is `did:earth:version:chainspace:namesp
 A DID that uses this method MUST begin with the following prefix `did:earth`. The prefix string MUST be in lowercase. The remainder of the DID after the prefix, is specified below:
 
 #### Method Specific Identifier
-The DID `earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
+The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
 
-The `version` is defined as a number that identifies a specific version of the `did:earth` method (e.g. 1, 2, 3 etc.). The version number enable future enhancements of the DID method implementations.
+The `version` is defined as an integer that identifies a specific version of `did:earth` method operations such as 
+create, read, update, and deactivate. The version number increases by one for each breaking change in the specification, enabling future enhancements to the specification while retaining backwards compatibility for long-lived identifiers. 
+
+Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains, this means supporting the version that was current when the chain first adopted did:earth functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
 
 The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
 
-The `namespace` is defined as an alphanumeric string that identifies a specific Cosmos module in the `chainspace` (e.g. "nft", "bank", "staking") where the DID reference is stored.
+The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
 
-To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the earth DID method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
+To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
 The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values and can be programmatically queried via an [API](https://registry.cosmos.directory/). 
 
@@ -40,12 +44,13 @@ The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be us
 
 The `did:earth` method support offline creation of DIDs.
 An offline generated `did:earth` DID must be unique by having the `unique-id` component be derived from the initial public key of the DID. 
+
 > For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
 > multibase(multicodec(public_key))
 
-#### earth DID method syntax
+#### did:earth method syntax
 ```abnf
-earth-did          = "did:earth:" version ":" chainspace ":" namespace ":" unique-id
+earth-did          = "did:earth:" chainspace ":" namespace ":" version ":"  unique-id
 version            = 1*version-char
 version-char       = DIGIT
 chainspace         = 1*50chainspace-char
@@ -93,15 +98,11 @@ A DID Document ("DIDDoc") associated with an earth DID is a set of data describi
 
 ### Linked Resources
 
-The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
+The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
 
 Resources may be provided in-line or by secure reference. Inline resources are appropriate only for use cases that need to directly include the resource in the IID Document. In many cases, this is a privacy problem. However, for some use cases, resources must be specified for on-chain execution, which justifies the added bytes and potential disclosure risk. The resource descriptor provides for a flexible representation of various mime types, compression, and encoding, as required for the use.
 
-This approach allows token owners to manage privacy in three key ways:
-
-1.  Avoids posting potentially sensitive information on-chain in an unavoidably public and irrevocable manner.
-2.  Provides a service endpoint that can apply appropriate privacy and security checks before revealing information.
-3.  The hashgraph resource descriptor type obscures not only the content of the linked resource, but also the quantity of resource objects.
+> Note: The below para could be moved to security considerations I think
 
 Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
 
@@ -624,13 +625,36 @@ WriteRequest{
 
 ### Privacy Considerations
 
-```jsonc
-    "proof": [{
-            "type": "hash" | "hashgraph" | "hashset",
-            "stage": "raw" | "compressed" | "encrypted" | "encoded",
-            "value": "hash" | "hashgraph" | "hashset"
-            }]
+#### IIDs are designed to represent on-chain Assets
+
+IIDs, e.g., did:earth:ixo:nft:1:abc are designed to represent on-chain assets, as such the identifier itself is never used to refer to real-world objects like people, with associated privacy requirements.
+
+#### IID references may refer to people or orgainsations
+
+IID references, e.g., did:earth:ixo:nft:1:abc#creator may in fact be used to refer to real people and organizations. As such, care must be taken to ensure that any associated personal data be managed off chain with appropriate privacy mechanisms such as the ability to remove the data from public disclosure.
+
+#### Linked Resources are designed to be privacy-agile
+
+IID references specified as Linked Resources offer several privacy-agile ways to associate the on-chain asset with arbitrary resources, providing a way for did:earth:ixo:nft:1:abc#creator to refer to an off-chain data store with the sensitive data. For example, an NFT's creator could be specified by a link and a hash to a Verifiable Credential (or a simple JSON file) that states the creator's name. Storing that name on-chain would create a regulatory problem. Linked Resources allow the information to be shared while ensuring the ability to honor requests for deletion.
+
+##### Example of a linked resource that references its creator 
+
+```javascript
+"linkedResource" : {
+  "id" : "#creator",
+  "path": "/creator",
+  "rel":"dc:creator",
+  "type" : "iid:ResourceDescriptor",
+  "proof" : [{
+     "type": "hash",
+     "stage": "encoded",
+     "value" : "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}],
+   "resourceFormat" : "application/did+ld+json",
+   "compression" : "none",
+   "endpoint": "https://earthprogram.directory?listing=did:earth:ixo:nft:1:abc123#owner"
+}
 ```
+
 #### Hash based Linked Resource
 
 #### Hash Graph based Linked Resource
