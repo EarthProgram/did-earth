@@ -93,8 +93,8 @@ A DID written to the ixo Cosmos Blockchain network "NFT" `namespace` referencing
 did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
-### DID Documents (DIDDocs)
-A DID Document ("DIDDoc") associated with an earth DID is a set of data describing a DID subject. The [representation of a DIDDoc when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
+### DID Documents
+A DID Document associated with an earth DID is a set of data describing a DID subject. The [representation of a DID Document when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
 
 ### Linked Resources
 
@@ -147,7 +147,7 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 }
 ```
 
-#### Elements for a W3C specification compliant DIDDoc representation
+#### Elements for a W3C specification compliant DID Document representation
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
 2. **`id`**: Target DID as base58-encoded string for 16 or 32 byte DID value with earth DID Method prefix `did:earth:<chainspace>:<namespace>:`.
@@ -171,7 +171,7 @@ The DID document, DID document data structures, and representation-specific entr
 In addition to using the JSON representation production rules, JSON-LD production MUST include the representation-specific @context entry. The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
 ```
 
-#### Additonal elements specific to the Earth DID method DIDDoc representation
+#### Additonal elements specific to the did:earth method DID Document representation
 13. **`linkedResource`** (optional): is a new IID document property for specifying how to verify, and optionally retrieve, any and all resources necessary for the proper functioning of the on-chain asset. Like email attachments, LinkedResources provide for attaching arbitrary media to an onchain asset.
 14. **`transclude`** (optional): is a new IID document property for specifying where in an IID document to transclude a linked resource. If present, the value of this property MUST be one (or an array of more than one) Linked Resources that eventually dereferences to a raw JSON-LD object. The properties of that JSON-LD object will be injected into the current IID document, replacing the transclude property entirely. The properties of the transcluded JSON-LD MUST be transformed to their absolute representation using the object's `@context` value prior to transclusion. The associated linked resources MUST have a `rel` value of "extension" and a `mediaType` value of "application/ld-json"
 15. **`extension`** (optional): a type of Linked Resource. A JSON-LD extension of the current document. The RDF statements in the extension are to be included in the current IID document, where specified by a "transclude" property. For example, additional service endpoint definitions may be added in a linked resource. These endpoints can be verified as being associated with the IID. But only by those parties who secure the definitions through other privacy respecting mechanisms. This property standardizes how to verifiably move arbitrary RDF statements outside of the IID document context, to provide additional security and privacy.
@@ -186,7 +186,7 @@ In addition to using the JSON representation production rules, JSON-LD productio
 21. **`displayDescription`** (optional): a property of Linked Resources that provide a longer text phrase for displaying additional detail about the asset.
 22. **`displayIcon`** (optional): a property of Linked Resources that provide a URL for an image asset to use when displaying the asset.
 
-#### State format for DIDDocs on ledger
+#### State format for DID Documents on ledger
 
 **Consider the following example minimum DID document from DID Core:**
 ##### EXAMPLE 1: A minimal DID document (JSON-LD)
@@ -334,9 +334,9 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 }
 ```
 
-#### DIDDoc metadata
+#### DID Document metadata
 
-##### Example of DIDDoc metadata
+##### Example of DID Document metadata
 
 #### Verification method
 
@@ -351,7 +351,7 @@ encoded public key.
 
 **Note**: Verification method cannot contain both `publicKeyJwk` and `publicKeyMultibase` but must contain at least one of them.
 
-##### Example of Verification method in a DIDDoc
+##### Example of Verification method in a DID Document
 
 ```jsonc
 {
@@ -369,14 +369,14 @@ encoded public key.
 }
 ```
 #### Service
-Services can be defined in a DIDDoc to express means of communicating with the DID subject or associated entities.
+Services can be defined in a DID Document to express means of communicating with the DID subject or associated entities.
 
-1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. It has a follow formats: `<DIDDoc-id>#<service-alias>` or `#<service-alias>`.
+1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. It has a follow formats: `<did-document-id>#<service-alias>` or `#<service-alias>`.
 2. **`type`** (string): The service type and its associated properties SHOULD be registered in the [DID Specification Registries](https://www.w3.org/TR/did-spec-registries/)
 3. **`serviceEndpoint`** (strings): A string that conforms to the rules of [RFC3986](https://www.rfc-editor.org/rfc/rfc3986) for URIs, a map, or a set composed of a one or more strings that conform to the rules of
 [RFC3986](https://www.rfc-editor.org/rfc/rfc3986) for URIs and/or maps.
 
-##### Example of Service in a DIDDoc
+##### Example of Service in a DID Document
 
 ```jsonc
 {
@@ -398,8 +398,8 @@ Application Chain->Asset Module: Asset registered with unique-asset-id and tx ID
 Asset Module->>DID Registry: MsgCreateIdentifier(unique-assset-id string, internal-namespace-identifier string)
 DID Registry->>Application Chain: Lookup namespace from internal-namespace-identifier
 Application Chain->>DID Registry: Return namespace
-DID Registry->>DID Registry: Generate Earth DID method compliant DID
-DID Registry->>Asset Module: Return fully-qualified Earth DID method compliant DID. (did:earth:ixo:nft:1234567)
+DID Registry->>DID Registry: Generate did:earth method compliant DID
+DID Registry->>Asset Module: Return fully-qualified did:earth method compliant DID. (did:earth:ixo:nft:1234567)
 Asset Module->>Asset Module: Store DID? Assume it will need to be stored as part of the asset state to recreate DID document?
 Asset Module->>DID Creator: Return DID to User for storage?
 
@@ -464,7 +464,7 @@ ixo NFT Module->>ixo NFT Module: Construct DID Document based on current chain s
 ixo NFT Module->>User: Return DID Document for DID `did:earth:ixo:nft:12345`
 ```
 
-To resolve DID earth method DID Documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
+To resolve did:earth method DID Documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
 
 A DID can be resolved using the gRPC message:
 ```golang
@@ -473,7 +473,7 @@ QueryIdentifierDocument(id string)
 The operation CAN be executed by anyone and is publicly available.
 
 - **`id`**: `QueryIdentifierDocument` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be resolved. Allowed `chainspace` and `namespace` values are available in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry)
-- **`metadata`**: Contains DIDDoc metadata? `created`, `updated`, `valid`, `versionId`
+- **`metadata`**: Contains DID Document metadata? `created`, `updated`, `valid`, `versionId`
 
 The IID resolver is a public facing interface and will be exposed by installing the IID module in the Cosmos blockchain. The IID resolver will resolve down to the `namespace` to query for the DID document. This assume that Cosmos module developers using the `did:earth` method will need to implement a DID resolver internal to the module to fetch stored DID documents.
 
