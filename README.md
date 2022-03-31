@@ -1,13 +1,17 @@
-# DID Method Specification - did:earth
-
+# did:earth Method Specification
+This document defines the syntax, data model, and operations for the **did:earth** DID method.
 ## Abstract
+**did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
+
 Interchain Identifiers (IIDs) [[1]](#ref1) are a family of Decentralized Identifier methods which are purpose-designed to identify, refer to, and interact with digital assets within blockchain namespaces.
 
-The IID specification builds on the Decentralized Identifier (DID) core specification from the World Wide Web Consortium (W3C) [[2]](#ref2). IIDs are fully conformant DIDs and therefore are DIDs. IID Documents are DID documents. Unlike DIDs, IIDs only reference on-chain assets—which we will refer to as tokens—but should be taken as any type of tokens, such as NFTs, fungible tokens, tokenized namespace records, or other on-chain assets.
+The IID specification builds on the Decentralized Identifier (DID) Core specification from the World Wide Web Consortium (W3C) [[2]](#ref2). IIDs are fully conformant DIDs and therefore are DIDs. IID Documents are DID documents. Unlike DIDs, IIDs only reference on-chain assets—which we will refer to as tokens—but should be taken as any type of tokens, such as NFTs, fungible tokens, tokenized namespace records, or other on-chain assets.
 
 By restricting IIDs to on-chain assets, we create a new class of identifier uniquely suited to the requirements of tokens and other chain-native components. IID methods can be developed for any compatible blockchain, making them suitable for interoperable representations of tokens (and the cryptography that secures those tokens) regardless of the underlying chain.
 
-IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights.
+This particular specification, **did:earth** applies the IID approach to earth-related assets on blockchains made with the Cosmos SDK.
+
+IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights. We describe those here, capturing their definition at the time this specification was developed. See the IID specification for current normative definitions.
 
 DID Methods which conform to the IID specification resolve to a DID document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
