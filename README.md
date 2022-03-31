@@ -1,9 +1,9 @@
 # DID Method Specification - did:earth
 
 ## Abstract
-Interchain Identifiers (IIDs) are a family of Decentralized Identifier methods which are purpose-designed to identify, refer to, and interact with digital assets within blockchain namespaces.
+Interchain Identifiers (IIDs) [[1]](#ref1) are a family of Decentralized Identifier methods which are purpose-designed to identify, refer to, and interact with digital assets within blockchain namespaces.
 
-The IID specification builds on the Decentralized Identifier (DID) core specification from the World Wide Web Consortium (W3C) [[1]](#ref1). IIDs are fully conformant DIDs and therefore are DIDs. IID Documents are DID documents. Unlike DIDs, IIDs only reference on-chain assets—which we will refer to as tokens—but should be taken as any type of tokens, such as NFTs, fungible tokens, tokenized namespace records, or other on-chain assets.
+The IID specification builds on the Decentralized Identifier (DID) core specification from the World Wide Web Consortium (W3C) [[2]](#ref2). IIDs are fully conformant DIDs and therefore are DIDs. IID Documents are DID documents. Unlike DIDs, IIDs only reference on-chain assets—which we will refer to as tokens—but should be taken as any type of tokens, such as NFTs, fungible tokens, tokenized namespace records, or other on-chain assets.
 
 By restricting IIDs to on-chain assets, we create a new class of identifier uniquely suited to the requirements of tokens and other chain-native components. IID methods can be developed for any compatible blockchain, making them suitable for interoperable representations of tokens (and the cryptography that secures those tokens) regardless of the underlying chain.
 
@@ -13,14 +13,14 @@ DID Methods which conform to the IID specification resolve to a DID document rep
 
 did:earth DIDs are IIDs intended identify assets on cosmos application chains.
 
-### DID Method Name
+## DID Method Name
 The namestring that shall identify this DID `method-name` is: `earth`.
 
 An example `did:earth` method identifier is `did:earth:version:chainspace:namespace:unique-id`.
 
 A DID that uses this method MUST begin with the following prefix `did:earth`. The prefix string MUST be in lowercase. The remainder of the DID after the prefix, is specified below:
 
-#### Method Specific Identifier
+### Method Specific Identifier
 The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
 
 The `version` is defined as an integer that identifies a specific version of `did:earth` method operations such as 
@@ -32,9 +32,9 @@ The `chainspace` is defined as a string that identifies a specific Cosmos blockc
 
 The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
 
-To support `did:earth`, any Cosmos application chain MAY add an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
+To support `did:earth`, any Cosmos application chain MAY add an entry in the Cosmos Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
-The [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) will be used as the source of valid `chainspace` values and can be programmatically queried via an [API](https://registry.cosmos.directory/). 
+The Cosmos Chain Registry will be used as the source of valid `chainspace` values and can be programmatically queried via an API [[4]](#ref4). 
 
 > Every Cosmos blockchain consist of a genesis file that defines the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be a unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
 
@@ -48,7 +48,7 @@ An offline generated `did:earth` DID must be unique by having the `unique-id` co
 > For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
 > multibase(multicodec(public_key))
 
-#### did:earth method syntax
+### did:earth method syntax
 ```abnf
 earth-did          = "did:earth:" chainspace ":" namespace ":" version ":"  unique-id
 version            = 1*version-char
@@ -61,7 +61,7 @@ id-char            = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
 
 ```
 
-#### Examples of `did:earth` identifiers
+### Examples of `did:earth` identifiers
 
 A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace`:
 
@@ -93,8 +93,8 @@ A DID written to the ixo Cosmos Blockchain network "NFT" `namespace` referencing
 did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
-### DID Documents
-A DID document associated with an earth DID is a set of data describing a DID subject. The [representation of a DID document when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
+## DID documents
+A DID document associated with an earth DID is a set of data describing a DID subject. The representation of a DID document when requested for production MUST meet the DID Core specifications [[5]](#ref5).
 
 ### Linked Resources
 
@@ -147,7 +147,7 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 }
 ```
 
-#### Elements for a W3C DID Core Compliant DID document Representation
+### Elements for a W3C specification compliant DID document representation
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
 2. **`id`**: Target DID as base58-encoded string for 16 or 32 byte DID value with earth DID Method prefix `did:earth:<chainspace>:<namespace>:`.
@@ -176,7 +176,7 @@ In addition to using the JSON representation production rules, JSON-LD productio
 14. **`transclude`** (optional): is a new IID document property for specifying where in an IID document to transclude a linked resource. If present, the value of this property MUST be one (or an array of more than one) Linked Resources that eventually dereferences to a raw JSON-LD object. The properties of that JSON-LD object will be injected into the current IID document, replacing the transclude property entirely. The properties of the transcluded JSON-LD MUST be transformed to their absolute representation using the object's `@context` value prior to transclusion. The associated linked resources MUST have a `rel` value of "extension" and a `mediaType` value of "application/ld-json"
 15. **`extension`** (optional): a type of Linked Resource. A JSON-LD extension of the current document. The RDF statements in the extension are to be included in the current IID document, where specified by a "transclude" property. For example, additional service endpoint definitions may be added in a linked resource. These endpoints can be verified as being associated with the IID. But only by those parties who secure the definitions through other privacy respecting mechanisms. This property standardizes how to verifiably move arbitrary RDF statements outside of the IID document context, to provide additional security and privacy.
 16. **`executableRight`** (optional): a type of Linked Resource. This resource is a machine-executable capability that can be invoked by the IID owner or its delegate, using cryptographic materials defined elsewhere in the IID document Verification Methods property.
-17. **`assertion`** (optional): a rel value for a Linked Resource. Verifiable credentials, verified claims, claim tokens as described in NFT-RFC-008. This allows arbitrary, yet verifiable attestations to be made either about the asset or about the resources defined by IID references. The attributes represented in these claims can be retrieved through the token interface using a Query by Example. (graph query) mechanism.
+17. **`assertion`** (optional): a rel value for a Linked Resource. Verifiable credentials, verified claims, claim tokens as described in NFT-RFC-008 [[6]](#ref6). This allows arbitrary, yet verifiable attestations to be made either about the asset or about the resources defined by IID references. The attributes represented in these claims can be retrieved through the token interface using a Query by Example. (graph query) mechanism.
 18. **`rel`** (optional): a property of Linked Resource. Defines the relationship of this resource to the IID asset. Known values include:
      1. "evidence" -- The resource is evidence for the creation of the asset.
      2. "encodedRepresentation" -- The resource is a binary representation of the asset, interpretable by compatible software to display or interact with.
@@ -189,7 +189,7 @@ In addition to using the JSON representation production rules, JSON-LD productio
 #### State format for DID documents on ledger
 
 **Consider the following example minimum DID document from DID Core:**
-##### EXAMPLE 1: A minimal DID document (JSON-LD)
+#### EXAMPLE 1: A minimal DID document (JSON-LD)
 
 ```json
 {
@@ -220,7 +220,7 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 
 **An equivalent example of minimal IID document would be:**
 
-##### EXAMPLE 2: A minimal IID document (JSON-LD)
+#### EXAMPLE 2: A minimal IID document (JSON-LD)
 
 ```json
 {
@@ -247,13 +247,12 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 }
 ```
 
-##### EXAMPLE 3: A minimal, privacy-preserving IID document (JSON-LD)
+#### EXAMPLE 3: A minimal, privacy-preserving IID document (JSON-LD)
 
 ```json
 {
 
   "@context": ["https://www.w3.org/ns/did/v1",
-
     "https://internft.org/ns/iid/v1"],
 
   "id": "did:earth:1:impacthub:nft:abc123",
@@ -297,7 +296,7 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 }
 ```
 
-##### EXAMPLE 4: A privacy-preserving IID document with zCap support (JSON-LD)
+#### EXAMPLE 4: A privacy-preserving IID document with zCap support (JSON-LD)
 ```json
 {
 
@@ -338,15 +337,15 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 
 ##### Example of DID document metadata
 
-#### Verification method
+### Verification method
 
 Verification methods are used to define how to authenticate / authorise interactions with a DID subject or delegates. Verification method is an OPTIONAL property.
 
 1. **`id`** (string): A string with format `did:earth:impacthub:<chainspace>:<namespace>#<key-alias>`
 2. **`controller`**: A string with fully qualified DID. DID must exist.
 3. **`type`** (string)
-4. **`publicKeyJwk`** (`map[string,string]`, optional): A map representing a JSON Web Key that conforms to [RFC7517](https://tools.ietf.org/html/rfc7517). See definition of `publicKeyJwk` for additional constraints.
-5. **`publicKeyMultibase`** (optional): A base58-encoded string that conforms to a [MULTIBASE](https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03)
+4. **`publicKeyJwk`** (`map[string,string]`, optional): A map representing a JSON Web Key that conforms to RFC7517 [[7]](#ref7). See definition of `publicKeyJwk` for additional constraints.
+5. **`publicKeyMultibase`** (optional): A base58-encoded string that conforms to a MULTIBASE [[8]](#ref8)
 encoded public key.
 
 **Note**: Verification method cannot contain both `publicKeyJwk` and `publicKeyMultibase` but must contain at least one of them.
@@ -368,15 +367,16 @@ encoded public key.
   }
 }
 ```
-#### Service
+
+### Service
 Services can be defined in a DID document to express means of communicating with the DID subject or associated entities.
 
-1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. The ID defines a node in the JSON-LD graph of the DID document, using either `<did-of-this-document>#<service-alias>` or `#<service-alias>`.
-2. **`type`** (string): The service type and its associated properties SHOULD be registered in the [DID Specification Registries](https://www.w3.org/TR/did-spec-registries/)
-3. **`serviceEndpoint`** (strings): A string that conforms to the rules of [RFC3986](https://www.rfc-editor.org/rfc/rfc3986) for URIs, a map, or a set composed of a one or more strings that conform to the rules of
-[RFC3986](https://www.rfc-editor.org/rfc/rfc3986) for URIs and/or maps.
+1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to RFC3986 [[9]](#ref9). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. It has a follow formats: `<did-document-id>#<service-alias>` or `#<service-alias>`.
+2. **`type`** (string): The service type and its associated properties SHOULD be registered in the DID Specification Registries [[10]](#ref10)
+3. **`serviceEndpoint`** (strings): A string that conforms to the rules of RFC3986 [[9]](#ref9) for URIs, a map, or a set composed of a one or more strings that conform to the rules of
+RFC3986 for URIs and/or maps.
 
-##### Example of Service in a DID document
+#### Example of Service in a DID document
 
 ```jsonc
 {
@@ -386,10 +386,10 @@ Services can be defined in a DID document to express means of communicating with
 }
 ```
 
-### DID transaction operations
-DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See [method specification](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
+## DID transaction operations
+DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See the draft method specification [[11]](#ref11) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
 
-#### Create DID (Register)
+### Create DID (Register)
 ```mermaid
 sequenceDiagram
 DID Creator->>Asset Module: Create asset
@@ -433,12 +433,12 @@ If the input DID is not a valid DID for the Earth method, or if the DID already 
 - **`chainspace`**: the relevant Cosmos blockchain that the DID should be registered on.
 - **`controller, verificationMethod, authentication, assertionMethod, capabilityInvocation, capabilityDelegation, keyAgreement, service, alsoKnownAs, context`**: Optional parameters in accordance with DID Core specification properties.
 
-##### Client request format for create DID
+#### Client request format for create DID
 ```jsonc
 WriteRequest (MsgCreateIdentifier(unique-id string, namespace string)
 ```
 
-##### Example of a create DID client request
+#### Example of a create DID client request
 ```jsonc
 WriteRequest{
         "data": MsgCreateIdentifier {
@@ -448,7 +448,7 @@ WriteRequest{
 }
 ```
 
-#### Read DID (Resolve and Verify)
+### Read DID (Resolve and Verify)
 Example flow for `did:earth:ixo:nft:12345`, an asset hosted by the NFT module on the ixo application chain.
 ```mermaid
 sequenceDiagram
@@ -472,18 +472,20 @@ QueryIdentifierDocument(id string)
 ```
 The operation CAN be executed by anyone and is publicly available.
 
-- **`id`**: `QueryIdentifierDocument` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be resolved. Allowed `chainspace` and `namespace` values are available in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry)
+- **`id`**: `QueryIdentifierDocument` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be resolved. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry [[3]](#ref3)
 - **`metadata`**: Contains DID document metadata? `created`, `updated`, `valid`, `versionId`
+
 
 The IID resolver is a public facing interface and will be exposed by installing the IID module in the Cosmos blockchain. The IID resolver will resolve down to the `namespace` to query for the DID document. This assume that Cosmos module developers using the `did:earth` method will need to implement a DID resolver internal to the module to fetch stored DID documents.
 
 The operation MUST return the DID document and metadata if it exist in the Cosmos blockchain module.
 
-##### Client request format to resolve a DID to its DID document
+#### Client request format to resolve a DID to its DID document
 ```jsonc
 WriteRequest QueryIdentifierDocument(id string)
 ```
-##### Example of DID resolution to DID document client request
+#### Example of DID resolution to DID document client request
+
 ```jsonc
 WriteRequest{
         "data": QueryIdentifierDocument {
@@ -491,7 +493,8 @@ WriteRequest{
         }
 }
 ```
-#### Update DID
+
+### Update DID
 This operation allow updates to DID documents by the controller(s).
 
 Please note that the DID will remain the same, but the contents of the DID document could change, e.g., by including a new verification key or adding service endpoints.
@@ -502,17 +505,18 @@ MsgUpdateIidDocument(id string, controller string, identifiers list, verificatio
 ```
 The operation MUST be executed by an authorized controller of the DID.
 
-- **`id`**: `MsgUpdateIidDocument` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be deleted. Allowed `chainspace` and `namespace` values are available in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry)
+- **`id`**: `MsgUpdateIidDocument` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be deleted. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry][[3]](#ref3))
 - **`controller`**: should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`.
 - **`identifiers, verificationMethods, verificationRelationships, service, linkedResources, accordedRights`**: Optional parameters in accordance with DID Core and IID specification properties.
 
 The operation MUST update the DID document and metadata. The operation is not reversible.
 
-##### Client request format to update a DID document
+#### Client request format to update a DID document
 ```jsonc
 WriteRequest MsgUpdateIidDocument(id string, controller string, identifiers list, verificationMethods list, verificationRelationships list, service service, linkedResources list, accordedRights list)
 ```
-##### Example of update DID document client request
+#### Example of update DID document client request
+
 ```jsonc
 WriteRequest{
         "data": MsgUpdateIidDocument {
@@ -528,7 +532,7 @@ WriteRequest{
 }
 ```
 
-#### Transfer DID
+### Transfer DID
 
 ```mermaid
 sequenceDiagram
@@ -573,10 +577,10 @@ Web Browser-->>User: Display NFT transfer success
 
 ```
 
-#### Revoke DID
+### Revoke DID
 This operation deactivates DID records using the did:earth method.
 
-#### Deactivate DID
+### Deactivate DID
 
 ```mermaid
 sequenceDiagram
@@ -595,12 +599,12 @@ The operation MUST be executed by an authorized controller of the DID.
 MsgDeactivateIdentifier(id string, Controller string)
 ```
 
-- **`id`**: `MsgDeactivateIdentifier` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be deactivated. Allowed `chainspace` and `namespace` values are available in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry)
+- **`id`**: `MsgDeactivateIdentifier` should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`. It MUST be the DID that is to be deactivated. Allowed `chainspace` and `namespace` values are available in the Cosmos Chain Registry [[3]](#ref3)
 - **`controller`**: should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`.
 
 The operation MUST update the DID document metadata and set the Active value to False. The operation is not reversible.
 
-##### Client request format to deactivate a DID
+#### Client request format to deactivate a DID
 ```jsonc
 WriteRequest MsgDeactivateIdentifier(id string, Controller string)
 ```
@@ -610,7 +614,7 @@ The operation MUST be executed by an authorized controller of the DID.
 ```golang
 MsgDeactivateIdentifier(id string, Controller string)
 ```
-##### Example of deactivate DID client request
+#### Example of deactivate DID client request
 ```jsonc
 WriteRequest{
         "data": MsgDeactivateIdentifier {
@@ -621,23 +625,23 @@ WriteRequest{
 ```
 
 
-### Security Considerations
+## Security Considerations
 
-### Privacy Considerations
+## Privacy Considerations
 
-#### IIDs are designed to represent on-chain Assets
+### IIDs are designed to represent on-chain Assets
 
 IIDs, e.g., did:earth:ixo:nft:1:abc are designed to represent on-chain assets, as such the identifier itself is never used to refer to real-world objects like people, with associated privacy requirements.
 
-#### IID references may refer to people or orgainsations
+### IID references may refer to people or orgainsations
 
 IID references, e.g., did:earth:ixo:nft:1:abc#creator may in fact be used to refer to real people and organizations. As such, care must be taken to ensure that any associated personal data be managed off chain with appropriate privacy mechanisms such as the ability to remove the data from public disclosure.
 
-#### Linked Resources are designed to be privacy-agile
+### Linked Resources are designed to be privacy-agile
 
 IID references specified as Linked Resources offer several privacy-agile ways to associate the on-chain asset with arbitrary resources, providing a way for did:earth:ixo:nft:1:abc#creator to refer to an off-chain data store with the sensitive data. For example, an NFT's creator could be specified by a link and a hash to a Verifiable Credential (or a simple JSON file) that states the creator's name. Storing that name on-chain would create a regulatory problem. Linked Resources allow the information to be shared while ensuring the ability to honor requests for deletion.
 
-##### Example of a linked resource that references its creator 
+#### Example of a linked resource that references its creator 
 
 ```javascript
 "linkedResource" : {
@@ -655,11 +659,11 @@ IID references specified as Linked Resources offer several privacy-agile ways to
 }
 ```
 
-#### Hash based Linked Resource
+### Hash based Linked Resource
 
-#### Hash Graph based Linked Resource
+### Hash Graph based Linked Resource
 
-#### Hash Set based Linked Resource
+### Hash Set based Linked Resource
 The `linkedResource` property provides a privacy-enabled way to attach
 digital resources to an on-chain asset. This is an optional property which
 may contain one or more resource descriptors in array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
@@ -675,7 +679,51 @@ This approach allows token owners to manage privacy in three key ways:
 Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
                     
 ## References
-<a name="ref1">[1]</a> Decentralized Identifiers (DIDs) v1.0. World Wide Web Consortium.
+<a name="ref1">[1]</a> Interchain Identifiers (draft specification).
+Online at
+[[https://github.com/interNFT/nft-rfc/blob/main/nft-rfc-009.md]](https://github.com/interNFT/nft-rfc/blob/main/nft-rfc-009.md).
+Accessed March 31, 2022.
+
+<a name="ref2">[2]</a> Decentralized Identifiers (DIDs) v1.0. World Wide Web Consortium.
 Online at
 [[https://www.w3.org/TR/did-core/]](https://www.w3.org/TR/did-core/).
 Accessed February 15, 2021.
+
+<a name="ref3">[3]</a> Cosmos Chain Registry.
+Online at
+[[https://github.com/cosmos/chain-registry]](https://github.com/cosmos/chain-registry).
+Accessed February 05, 2022.
+
+<a name="ref4">[4]</a> Cosmos Chain Registry API.
+Online at
+[[https://registry.cosmos.directory/]](https://registry.cosmos.directory/).
+Accessed February 05, 2022.
+
+<a name="ref5">[5]</a> DID Core DID document Representation Specification.
+Online at
+[[https://www.w3.org/TR/did-core/#representations]](https://www.w3.org/TR/did-core/#representations).
+
+<a name="ref6">[6]</a> NFT-RFC-008: NFT Resource Verification.
+Online at
+[[https://github.com/interNFT/nft-rfc/blob/main/nft-rfc-008.md]](https://github.com/interNFT/nft-rfc/blob/main/nft-rfc-008.md).
+
+<a name="ref7">[7]</a> RFC7517: JSON Web Key. IETF.
+Online at
+[[https://tools.ietf.org/html/rfc7517]](https://tools.ietf.org/html/rfc7517).
+
+<a name="ref8">[8]</a> The Multibase Data Format. IETF.
+Online at
+[[https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03]](https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03).
+
+
+<a name="ref9">[9]</a> RFC3986 Uniform Resource Identifier (URI): Generic Syntax. IETF.
+Online at
+[[https://www.rfc-editor.org/rfc/rfc3986]](https://www.rfc-editor.org/rfc/rfc3986).
+
+<a name="ref10">[10]</a> DID Specification Registries. W3C.
+Online at
+[[https://www.w3.org/TR/did-spec-registries/]](https://www.w3.org/TR/did-spec-registries/).
+
+<a name="ref11">[11]</a> Cosmos IID Module Specification.
+Online at
+[[https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ]](https://hackmd.io/1Nh-r80_SiyKvWzotvkTSQ).
