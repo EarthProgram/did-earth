@@ -9,7 +9,7 @@ By restricting IIDs to on-chain assets, we create a new class of identifier uniq
 
 IIDs also introduce a few new features—conformant extensions to the DID Core specification—that provide for privacy-respecting options for the full range of expected token functionality, including Linked Resources, On-chain Service Endpoints, and Accorded Rights.
 
-DID Methods which conform to the IID specification resolve to a DID Document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
+DID Methods which conform to the IID specification resolve to a DID document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
 did:earth DIDs are IIDs intended identify assets on cosmos application chains.
 
@@ -94,7 +94,7 @@ did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
 ### DID Documents
-A DID document associated with an earth DID is a set of data describing a DID subject. The [representation of a DID Document when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
+A DID document associated with an earth DID is a set of data describing a DID subject. The [representation of a DID document when requested for production](https://www.w3.org/TR/did-core/#representations) MUST meet the DID Core specifications.
 
 ### Linked Resources
 
@@ -147,7 +147,7 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 }
 ```
 
-#### Elements for a W3C DID Core Compliant DID Document Representation
+#### Elements for a W3C DID Core Compliant DID document Representation
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
 2. **`id`**: Target DID as base58-encoded string for 16 or 32 byte DID value with earth DID Method prefix `did:earth:<chainspace>:<namespace>:`.
@@ -413,7 +413,7 @@ DID records created by various Cosmos module developers will be stored in an int
 
 Below is an example of create operation with the IID interface used by did:earth.
 
-This operation creates a new DID using the did:earth method along with associated DID Document representation.
+This operation creates a new DID using the did:earth method along with associated DID document representation.
 
 To create and publish a local `chainspace` DID document use the message: 
 
@@ -460,11 +460,11 @@ Cosmos DID Registry->>User: Route to ixo DID Registry
 User->>Ixo DID Registry:  Resolve DID for `did:earth:ixo:nft:12345`
 Ixo DID Registry->>User : Return route to ixo NFT module
 User->>ixo NFT Module: Resolve DID for `did:earth:ixo:nft:12345`
-ixo NFT Module->>ixo NFT Module: Construct DID Document based on current chain state
-ixo NFT Module->>User: Return DID Document for DID `did:earth:ixo:nft:12345`
+ixo NFT Module->>ixo NFT Module: Construct DID document based on current chain state
+ixo NFT Module->>User: Return DID document for DID `did:earth:ixo:nft:12345`
 ```
 
-To resolve did:earth method DID Documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
+To resolve did:earth method DID documents, the `QueryIdentifierDocument` operation fetches a response from the ledger. The integrity of the DID documents stored on the ledger is guaranteed by the underlying Cosmos blockchain protocol. DID resolution requests can be sent to the gRPC IID resolver interface for a node by passing the fully-qualified DID. 
 
 A DID can be resolved using the gRPC message:
 ```golang
@@ -477,13 +477,13 @@ The operation CAN be executed by anyone and is publicly available.
 
 The IID resolver is a public facing interface and will be exposed by installing the IID module in the Cosmos blockchain. The IID resolver will resolve down to the `namespace` to query for the DID document. This assume that Cosmos module developers using the `did:earth` method will need to implement a DID resolver internal to the module to fetch stored DID documents.
 
-The operation MUST return the DID Document and metadata if it exist in the Cosmos blockchain module.
+The operation MUST return the DID document and metadata if it exist in the Cosmos blockchain module.
 
-##### Client request format to resolve a DID to it's DID Document
+##### Client request format to resolve a DID to its DID document
 ```jsonc
 WriteRequest QueryIdentifierDocument(id string)
 ```
-##### Example of DID resolution to DID Document client request
+##### Example of DID resolution to DID document client request
 ```jsonc
 WriteRequest{
         "data": QueryIdentifierDocument {
@@ -492,7 +492,7 @@ WriteRequest{
 }
 ```
 #### Update DID
-This operation allow updates to DID Documents by the controller(s).
+This operation allow updates to DID documents by the controller(s).
 
 Please note that the DID will remain the same, but the contents of the DID document could change, e.g., by including a new verification key or adding service endpoints.
 
@@ -506,13 +506,13 @@ The operation MUST be executed by an authorized controller of the DID.
 - **`controller`**: should be a fully qualified DID of type `did:earth:<chainspace>:<namespace>`.
 - **`identifiers, verificationMethods, verificationRelationships, service, linkedResources, accordedRights`**: Optional parameters in accordance with DID Core and IID specification properties.
 
-The operation MUST update the DID Document and metadata. The operation is not reversible.
+The operation MUST update the DID document and metadata. The operation is not reversible.
 
-##### Client request format to update a DID Document
+##### Client request format to update a DID document
 ```jsonc
 WriteRequest MsgUpdateIidDocument(id string, controller string, identifiers list, verificationMethods list, verificationRelationships list, service service, linkedResources list, accordedRights list)
 ```
-##### Example of update DID Document client request
+##### Example of update DID document client request
 ```jsonc
 WriteRequest{
         "data": MsgUpdateIidDocument {
@@ -555,7 +555,7 @@ Chain Registry API-->>NFT DAPP: Return chain.json
 NFT DAPP->>ixo DID Registry: Resolve NFT IID
 ixo DID Registry-->>NFT DAPP: Asset Module Reference
 NFT DAPP->>ixo NFT Module: Resolve NFT IID
-ixo NFT Module-->>NFT DAPP: Return DID Document
+ixo NFT Module-->>NFT DAPP: Return DID document
 NFT DAPP->>NFT DAPP: Generate transfer transaction
 NFT DAPP->>Web Browser: Request tx signature
 Web Browser->>Wallet: Request tx signature
