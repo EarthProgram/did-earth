@@ -1,4 +1,7 @@
-
+---
+title: did:earth Method Specification
+permalink: https://w3id.org/earth/did-earth
+---
 # DID Method Specification - did:earth
 
 ## Abstract
