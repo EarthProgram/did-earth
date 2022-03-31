@@ -1,5 +1,7 @@
 # did:earth Method Specification
 This document defines the syntax, data model, and operations for the **did:earth** DID method.
+
+**Authors** : {{ author }}
 ## Abstract
 **did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
 
@@ -17,8 +19,8 @@ DID Methods which conform to the IID specification resolve to a DID document rep
 
 did:earth DIDs are IIDs intended identify assets on cosmos application chains.
 
-## DID Method Name
-The namestring that shall identify this DID `method-name` is: `earth`.
+## Method Name
+The `method-name` that identifies this method  is: `earth`.
 
 An example `did:earth` method identifier is `did:earth:version:chainspace:namespace:unique-id`.
 
