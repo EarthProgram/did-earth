@@ -1,7 +1,7 @@
 # did:earth Method Specification
 This document defines the syntax, data model, and operations for the **did:earth** DID method.
 
-**Authors** : {{ author }}
+**Authors** : {{ page.author }}
 ## Abstract
 **did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
 
