@@ -245,7 +245,7 @@ RFC3986 for URIs and/or maps.
 In addition to the properties defined in DID Core, the following properties are defined for **did:earth**.
 
 #### Context
-As an IID, **did:earth** DID documents must include `https://earthprogram.github.io/NS/iid/v1` as a context value, following the default DID context:
+As an IID, **did:earth** DID documents MUST include `https://earthprogram.github.io/NS/iid/v1` as a context value, following the default DID context:
 
 ```json
 "@context" : [
