@@ -17,11 +17,41 @@ IIDs also introduce a few new features—conformant extensions to the DID Core s
 
 DID Methods which conform to the IID specification resolve to a DID document representing how to securely interact with a uniquely identified digital asset, within a unique blockchain namespace. Because IIDs are DIDs, software applications that are conformant with the W3C specification will be able to inter-operate with IIDs and IID documents, although some IID-specific features may require additional tooling.
 
-did:earth DIDs are IIDs intended identify assets on cosmos application chains.
+**did:earth** DIDs are IIDs intended identify assets on Cosmos application chains.
 
-## Method Name
-The `method-name` that identifies this method  is: `earth`.
+## Architecture Overview
+In the Cosmos ecosystem, **application chains** are sovereign blockchains built using the Cosmos SDK. These application chains are comprised of various modules, which perform different functions. We refer to modules that manage the state of on-chain assets as **asset modules**.
 
+To support **did:earth**, three modules must be operational: a chain registry, a namespace registry, and an asset module.
+
+```mermaid.js
+classDiagram
+    class ChainRegistry
+    ChainRegistry : -chainDescriptors
+    ChainRegistry : +getChainDescriptor(chainspace)
+    ChainRegistry : +setChainDescriptor(chainDescriptor)
+
+    class NamespaceRegistry
+    NamespaceRegistry : -namespaceDescriptors
+    NamespaceRegistry : +getNamespaceDescriptor(namespace)
+    NamespaceRegistry :+setNamespaceDescriptor(namespaceDescriptor)
+
+    class AssetModule
+    AssetModule : -assets
+    AssetModule : +getDidDocument(DID)
+    AssetModule : +createAsset(assetDescriptor)
+    AssetModule : updateAsset(assetDescriptor)
+    AssetModule : deactiveAsset(DID)
+```
+
+**Chain Registry** Maintains a set of chain descriptors which describe how to access particular application chains, indexed by chainspace.
+
+**Namespace Registry** Maintains a set of namespace descriptors which describe how to access particular asset modules, indexed by namespace.
+
+**Asset Module** Maintains on-chain assets, with its own module-specific functions for creating, updating, and deactivating assets. Each Asset Module MUST also support a method for retrieving the DID Document for a given asset, given a DID managed by that module.
+
+The role of each of these modules is further described below.
+## did:earth Syntax
 An example `did:earth` method identifier is `did:earth:version:chainspace:namespace:unique-id`.
 
 There are four forms of did:earth DIDs
@@ -32,6 +62,8 @@ did:earth:chainspace:namespace:unique-id
 did:earth:version:chainspace
 did:earth:chainspace
 ```
+
+In short, you must have a chainspace, but the version and asset-id are optional.
 
 ### did:earth ABNF Rules
 
@@ -46,8 +78,6 @@ unique-id          = *( *idchar ":" ) 1*id-char
 id-char             = ALPHA / DIGIT / "." / "-" / "_" / pct-encoded
 pct-encoded        = "%" HEXDIG HEXDIG
 ```
-
-In short, you must have a chainspace, but the version and asset-id are optional.
 
 ### Method Name
 A DID that uses this method MUST begin with the prefix `did:earth`. The prefix string MUST be in lowercase.
@@ -68,25 +98,14 @@ The `asset-id`, if present, MUST be a unique identifier for the particular on-ch
 
 The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
 
-The `unique-id` is mixed character string that uniquely identifies an asset managed by the application chain under the namespace defined by the `namespace` component. The asset module that handles each namespace MUST enforce uniqueness so that one and onely one asset under that module's control is associated with each `unique-id`. To facilitate off-chain creation of did:earth DIDs, prior to creating an on-chain asset, the `unique-id` SHOULD be a statistically unique representation of public cryptographic material, such as a public key. Each asset module is free to define any strategy for creating and managing its own `unique-id`s.
+The `unique-id` is mixed character string that uniquely identifies an asset managed by the application chain under the namespace defined by the `namespace` component. The asset module that handles each namespace MUST enforce uniqueness so that one and onely one asset under that module's control is associated with each `unique-id`. To facilitate off-chain creation of did:earth DIDs, prior to creating an on-chain asset, the `unique-id` MUST be a representation of a Secp256k1 public key as encoded for did:key <https://w3c-ccg.github.io/did-method-key/#secp256k1> based on the multibase and multicodec methods: ```multibase(multicodec(public_key))
 
-To support `did:earth`, any Cosmos application chain MAY add an entry in the Cosmos Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
+If `asset-id` is missing, then the DID refers to the chainDescriptor maintained by the chain registry rather than an asset maintained by an asset module.
 
-The Cosmos Chain Registry will be used as the source of valid `chainspace` values and can be programmatically queried via an API [[4]](#ref4). 
+For example, `did:earth:ixo` refers to the chain descriptor associated with the "ixo" chain space in the chain registry.
 
-> Every Cosmos blockchain consist of a genesis file that defines the operational parameters including the `chain-name`. The `chain-id` refers to a specific `chainspace` blockchain and MUST be a unique (up to 50 characters), alphanumeric value across all Cosmos blockchains.
-
-> For each Cosmos blockchain there will be an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) that includes a file called `chain.json`. Each `chain.json` file will have two entries, one representing the `mainnet` and another representing the `testnet` of the Cosmos blockhain `chainspace`. The `chain_name` entry of either the `mainnet` or `testnet` can be used to represent the `chainspace` in the earth DID method. The `chain-id` contained in the `chain.json` will be extracted for each `chain-name` to identify the correct Cosmos blockchain network to connect to. 
-
->Two cryptogaphic suites will be available for the earth DID method, namely `Secp256k1` and `Ed25519`.
-
-The `did:earth` method support offline creation of DIDs.
-An offline generated `did:earth` DID must be unique by having the `unique-id` component be derived from the initial public key of the DID. 
-
-> For an `Ed25519` public key, the first 16 bytes of the base-58 representation of the 256-bit public key is used to generate the unique-id.
-> multibase(multicodec(public_key))
-
-### did:earth method syntax
+### did:earth DID syntax
+The following describes the syntax for *did:earth* DIDs.
 ```abnf
 earth-did          = "did:earth:" chainspace ":" namespace ":" version ":"  unique-id
 version            = 1*version-char
@@ -99,12 +118,41 @@ id-char            = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
 
 ```
 
+### did:earth DID-URL syntax
+**did:earth** DIDs may also be used in DID-URLs, based on [RFC5234](https://www.w3.org/TR/did-core/#bib-rfc3986)
+```abnf
+earth-did-url      = earth-did [path-abempty] [ "#" fragment ]
+path-abempty  = *( "/" segment )
+segment       = *pchar
+segment-nz    = 1*pchar
+segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
+pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+fragment    = *( pchar / "/" / "?" )
+```
+NOTE: **did:earth** does not support `query` parts. The path and fragment parts are defined below.
+## Adding support for did:earth
+
+To support `did:earth`, any Cosmos application chain MUST add an entry in the Cosmos Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used to identify the correct Cosmos blockchain network to connect to.
+
+The Cosmos Chain Registry is the source of valid `chainspace` values and can be programmatically queried via an API [[4]](#ref4).
+
+For each Cosmos blockchain there MUST be an entry in the [Cosmos Chain Registry](https://github.com/cosmos/chain-registry) that includes a file called `chain.json`. The chain registry's chain descriptors will point to the appropriate source for its chain.json file.
+
+The `did:earth` method supports offline creation of DIDs. Any valid Secp256k1 public key may be used to identify a did:earth asset. To support this, each asset module must allow the assignment of an assetID at creation. It SHOULD use a message format that includes a signature using the associated private key to establish the initial control over that key. If an asset module is called to create an asset with an asset-id already associated with an asset under its control, it MUST be rejected.
+
+During resolution, resolvers MUST first check on-chain to see if a given identifier is registered with the asset module. If that returns an "identifier not found" error, it must generate a minimalist deterministic DID document using the algorithm defined for did:key, but retaining the full did:earth DID as its identifier.
+
+Note that to support this functionality, the chain registry--which is itself an asset module managing the chainspace descriptors--exposes two functions which refer to the same asset:
+
+* getDidDocument(`did:earth:hub:chainregistry:abc123`) -- returns the DID document for controlling that chain descriptor.
+* getChainDescriptor(`did:earth:ixo`) -- returns the chain descriptor file associated with the "ixo" chainspace.
+
 ### Examples of `did:earth` identifiers
 
 A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace`:
 
 ```abnf
-did:earth:1:impacthub:nft:7Tqg6BwSSWapxgUDm9KKgg
+did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg
 ```
 
 A DID written to the Regen Cosmos Blockchain network "NFT" `namespace`:
@@ -119,7 +167,7 @@ A DID written to the Regen `Testnet` Cosmos Blockchain network "NFT" `namespace`
 did:earth:1:regentest:ecocredit:1Kpg3KJPOIarthPWf8HHyy
 ```
 
-A DID written to the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace` retrieving a specific IID Linked Resource `path`:
+A DID URL on the ixo Impact Hub Cosmos Blockchain network "NFT" `namespace` for retrieving a specific IID Linked Resource using a `path`:
 
 ```abnf
 did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg/myresource
@@ -132,8 +180,10 @@ did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ```
 
 ## DID documents
-A DID document associated with an earth DID is a set of data describing a DID subject. The representation of a DID document when requested for production MUST meet the DID Core specifications [[5]](#ref5).
+A DID document associated with a **did:earth** DID is a set of data describing an on-chain asset. The representation of a **did:earth** DID document MUST meet the DID Core specifications [[5]](#ref5).
 
+### Additional Properties
+In addition to the properties defined in DID Core, the following properties are defined for **did:earth**.
 ### Linked Resources
 
 The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
