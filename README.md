@@ -22,9 +22,9 @@ DID Methods which conform to the IID specification resolve to a DID document rep
 ## Architecture Overview
 In the Cosmos ecosystem, **application chains** are sovereign blockchains built using the Cosmos SDK. These application chains are comprised of various modules, which perform different functions. We refer to modules that manage the state of on-chain assets as **asset modules**.
 
-To support **did:earth**, three modules must be operational: a chain registry, a namespace registry, and an asset module.
+To support **did:earth**, three modules must be operational: a **chain registry**, a **namespace registry**, and an **asset module**.
 
-```mermaid
+<!--```mermaid
 classDiagram
     class ChainRegistry
     ChainRegistry : -chainDescriptors
@@ -43,7 +43,7 @@ classDiagram
     AssetModule : updateAsset(assetDescriptor)
     AssetModule : deactiveAsset(DID)
 ```
-
+-->
 **Chain Registry** Maintains a set of chain descriptors which describe how to access particular application chains, indexed by chainspace.
 
 **Namespace Registry** Maintains a set of namespace descriptors which describe how to access particular asset modules, indexed by namespace.
