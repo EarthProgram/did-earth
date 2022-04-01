@@ -187,7 +187,7 @@ A DID document associated with a **did:earth** DID is a set of data describing a
 
 ### Properties defined for all W3C specification compliant DID documents 
 
-1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
+1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules. (This also requires the IID context, described in the following section.)
 2. **`id`**: A **did:earth** DID as defined in this document. 
 3. **`controller`** (optional): A list of fully qualified DID strings or one string. Contains one or more DIDs whose verification relationships MUST be considered valid for this DID.
 4. **`verificationMethod`** (optional): A list of Verification Methods
@@ -329,6 +329,7 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 
 **Consider the following example minimum DID document from DID Core:**
 #### EXAMPLE 1: A minimal DID document (JSON-LD)
+(not a did:earth did document, shown for comparison)
 
 ```json
 {
@@ -364,11 +365,10 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 ```json
 {
 
-"@context": ["https://www.w3.org/ns/did/v1",
-
-  "https://internft.org/ns/iid/v1"],
-> [replace with the correct w3id/org permalink]
-"https://internft.org/ns/iid/v1"]
+"@context" : [
+   "https://www.w3.org/ns/did/v1",
+   "https://w3id.org/earth/NS/iid/v1"
+],
 "id": "did::earth:1:impacthub:nft:abc123",
 
 "authentication": [{
@@ -391,8 +391,11 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 ```json
 {
 
-  "@context": ["https://www.w3.org/ns/did/v1",
-    "https://internft.org/ns/iid/v1"],
+  "@context" : [
+   "https://www.w3.org/ns/did/v1",
+   "https://w3id.org/earth/NS/iid/v1"
+  ],
+
 
   "id": "did:earth:1:impacthub:nft:abc123",
 
@@ -439,8 +442,10 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 ```json
 {
 
-  "@context": ["https://www.w3.org/ns/did/v1",
-    "https://internft.org/ns/iid/v1"],
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://www.w3id.org/earth/NS/iid/v1"
+  ],
   "id": "did:earth:1:impacthub:nft:abc123",
 
   "verificationMethod": [{
@@ -480,7 +485,7 @@ All did:earth serializations MUST use json-ld.
 
 The DID document, DID document data structures, and representation-specific entries map MUST be serialized to the JSON-LD representation according to the JSON representation production rules as defined in § 6.2 JSON.
 
-In addition to using the JSON representation production rules, JSON-LD production MUST include the representation-specific @context entry. The serialized value of @context MUST be the JSON String <https://www.w3.org/ns/did/v1>, or a JSON Array where the first item is the JSON String <https://www.w3.org/ns/did/v1> and the subsequent items are serialized according to the JSON representation production rules.
+In addition to using the JSON representation production rules, JSON-LD production MUST include the representation-specific @context entry. The serialized value of @context MUST be a JSON Array where the first item is the JSON String `https://www.w3.org/ns/did/v1`, and the second item is the JSON string `https://www.w3id.org/earth/NS/iid/v1`.
 
 #### Example of Service in a DID document
 
