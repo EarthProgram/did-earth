@@ -5,6 +5,7 @@ This document defines the syntax, data model, and operations for the **did:earth
 * **Joe Andrieu** &lt;<a href="mailto:joe@legreq.com">joe@legreq.com</a>&gt;
 * **Lohan Spies** &lt;<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a>&gt;
 * **Shaun Conway** &lt;<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>&gt;
+
 ## Abstract
 **did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
 
