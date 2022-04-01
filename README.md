@@ -1,7 +1,7 @@
 # did:earth Method Specification
 This document defines the syntax, data model, and operations for the **did:earth** DID method.
 
-**Authors** : **Lohan Spies** <<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a> >, **Joe Andrieu** <<a href="mailto:joe@legreq.com">joe@legreq.com</a>>, and **Shaun Conway** <<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>>
+**Authors** : **Lohan Spies** &lt;<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a>&gt;, **Joe Andrieu** &lt;<a href="mailto:joe@legreq.com">joe@legreq.com</a>&gt;, and **Shaun Conway** &lt;<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>&gt;
 ## Abstract
 **did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
 
@@ -9,7 +9,7 @@ Interchain Identifiers (IIDs) [[1]](#ref1) are a family of Decentralized Identif
 
 The IID specification builds on the Decentralized Identifier (DID) Core specification from the World Wide Web Consortium (W3C) [[2]](#ref2). IIDs are fully conformant DIDs and therefore are DIDs. IID Documents are DID documents. Unlike DIDs, IIDs only reference on-chain assets—which we will refer to as tokens—but should be taken as any type of tokens, such as NFTs, fungible tokens, tokenized namespace records, or other on-chain assets.
 
-By restricting IIDs to on-chain assets, we create a new class of identifier uniquely suited to the requirements of tokens and other chain-native components. IID methods can be developed for any compatible blockchain, making them suitable for interoperable representations of tokens (and the cryptography that secures those tokens) regardless of the underlying chain.
+Restricted to on-chain assets, IIDs are a new class of identifier uniquely suited to the requirements of fungible tokens, non-fungible tokens, and other chain-native components. IID methods can be developed for any compatible blockchain, making them suitable for interoperable representations of assets (and the cryptography that secures those tokens) regardless of the underlying chain.
 
 This particular specification, **did:earth** applies the IID approach to earth-related assets on blockchains made with the Cosmos SDK.
 
