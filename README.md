@@ -69,7 +69,7 @@ did:earth:chainspace
 
 In short, you must have a chainspace, but the version and asset-id are optional.
 
-### did:earth ABNF Rules
+### did:earth DID Syntax (ABNF)
 
 ```abnf
 did-earth          = "did:earth:" method-specific-id
@@ -107,20 +107,6 @@ The `unique-id` is mixed character string that uniquely identifies an asset mana
 If `asset-id` is missing, then the DID refers to the chainDescriptor maintained by the chain registry rather than an asset maintained by an asset module.
 
 For example, `did:earth:ixo` refers to the chain descriptor associated with the "ixo" chain space in the chain registry.
-
-### did:earth DID syntax
-The following describes the syntax for *did:earth* DIDs.
-```abnf
-earth-did          = "did:earth:" chainspace ":" namespace ":" version ":"  unique-id
-version            = 1*version-char
-version-char       = DIGIT
-chainspace         = 1*50chainspace-char
-chainspace-char    = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
-namespace          = 1*50idchar 
-unique-id          = *( *idchar ":" ) 1*idchar
-id-char            = ALPHA / DIGIT / (ALPHA "-") / (DIGIT "-")
-
-```
 
 ### did:earth DID-URL syntax
 **did:earth** DIDs may also be used in DID-URLs, based on [RFC5234](https://www.w3.org/TR/did-core/#bib-rfc3986)
