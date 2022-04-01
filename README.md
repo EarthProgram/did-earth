@@ -244,13 +244,21 @@ RFC3986 for URIs and/or maps.
 
 In addition to the properties defined in DID Core, the following properties are defined for **did:earth**.
 
+#### Context
+As an IID, **did:earth** DID documents must include `https://earthprogram.github.io/NS/iid/v1` as a context value, following the default DID context:
+
+```json
+"@context" : [
+   "https://www.w3.org/ns/did/v1",
+   "https://w3id.org/earth/NS/iid/v1"
+]
+```
+
 #### Linked Resources
 
 `linkedResource` (optional) : property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
 
 Resources may be provided in-line or by secure reference. Inline resources are appropriate only for use cases that need to directly include the resource in the IID Document. In many cases, this is a privacy problem. However, for some use cases, resources must be specified for on-chain execution, which justifies the added bytes and potential disclosure risk. The resource descriptor provides for a flexible representation of various mime types, compression, and encoding, as required for the use.
-
-> Note: The below para could be moved to security considerations I think
 
 Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
 
@@ -724,6 +732,11 @@ WriteRequest{
 
 
 ## Security Considerations
+**did:earth** is designed for Cosmos compatible blockchains, which secure chain state using a proof-of-stake algorithm. Actively maintained and supporting hundreds of independent blockchains, Cosmos has a well-developed security process defined at https://github.com/cosmos/cosmos-sdk/blob/master/SECURITY.md. 
+
+All **did:earth** DIDs use Secp256k1 keys for initial asset creation and updates. This is the same cryptographic curve used by Bitcoin and Ethereum; it is largely considered secure.
+
+The asset module on application chains is responsible for securing CRUD operations on the assets in manages. A thorough security review is recommended for any asset module.
 
 ## Privacy Considerations
 
