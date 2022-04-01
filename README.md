@@ -24,19 +24,51 @@ The `method-name` that identifies this method  is: `earth`.
 
 An example `did:earth` method identifier is `did:earth:version:chainspace:namespace:unique-id`.
 
-A DID that uses this method MUST begin with the following prefix `did:earth`. The prefix string MUST be in lowercase. The remainder of the DID after the prefix, is specified below:
+There are four forms of did:earth DIDs
+
+```abnf
+did:earth:version:chainspace:namespace:unique-id
+did:earth:chainspace:namespace:unique-id
+did:earth:version:chainspace
+did:earth:chainspace
+```
+
+### did:earth ABNF Rules
+
+```abnf
+did-earth          = "did:earth:" method-specific-id
+method-specific-id = [version ":"] chainspace [":" asset-id]
+version            = 1*DIGIT
+chainspace         = ALPHA *id-char
+asset-id           = namespace ":" unique-id
+namespace          = *id-char
+unique-id          = *( *idchar ":" ) 1*id-char
+id-char             = ALPHA / DIGIT / "." / "-" / "_" / pct-encoded
+pct-encoded        = "%" HEXDIG HEXDIG
+```
+
+In short, you must have a chainspace, but the version and asset-id are optional.
+
+### Method Name
+A DID that uses this method MUST begin with the prefix `did:earth`. The prefix string MUST be in lowercase.
 
 ### Method Specific Identifier
-The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `namespace` component.
+The `did:earth` method-specific identifier (`method-specific-id`) is made up of a `version`, `chainspace` and a `asset-id` component.
 
-The `version` is defined as an integer that identifies a specific version of `did:earth` method operations such as 
-create, read, update, and deactivate. The version number increases by one for each breaking change in the specification, enabling future enhancements to the specification while retaining backwards compatibility for long-lived identifiers. 
+The `version`, if present, MUST be an integer that identifies a specific version of `did:earth` method operations such as
+create, read, update, and deactivate. The version number increases by one for each breaking change in the specification, enabling future enhancements to the specification while retaining backwards compatibility for long-lived identifiers.
 
-Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains, this means supporting the version that was current when the chain first adopted did:earth functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
+If `version` is not present, it MUST be assumed to be version 1, the set of operations defined in this initial version of the specification. Later versions will refer to operations defined in a future version of this specification. Note that the version refers to the set of operations, not the version of the specification.
 
-The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored.
+Implementers SHOULD maintain compatibility with all existing versions likely to be in use. For application chains that identify assets using did:earth, this means supporting the version that was current when the chain first adopted did:earth functionality, as well as all subsequent versions if possible. DID resolvers--which may be off-chain--will likely need to maintain support for all versions until convinced there are no outstanding DIDs using that version. Software which is asked to handled a version # that it does not support MUST return an error.
+
+The `chainspace` is defined as a string that identifies a specific Cosmos blockchain (e.g. "ixo", "regen", "cosmos") where the DID reference is stored. It must begin with an alphabetic character so parsers can distinguish between the `version` component and the `chainspace` component. Thereafter, it may contain any alpha numeric character.
+
+The `asset-id`, if present, MUST be a unique identifier for the particular on-chain asset hosted on the blockchain defined by `chainspace`. It is comprised of a `namespace` and a `unique-id`.
 
 The `namespace` is an alphanumeric string that identifies a distinct namespace managed by the application chain's name server module. These namespaces, e.g., "nft", "bank", "staking", identify where the on-chain asset is maintained on that particular chain. It is used to route incoming resolution requests to the correct asset module.
+
+The `unique-id` is mixed character string that uniquely identifies an asset managed by the application chain under the namespace defined by the `namespace` component. The asset module that handles each namespace MUST enforce uniqueness so that one and onely one asset under that module's control is associated with each `unique-id`. To facilitate off-chain creation of did:earth DIDs, prior to creating an on-chain asset, the `unique-id` SHOULD be a statistically unique representation of public cryptographic material, such as a public key. Each asset module is free to define any strategy for creating and managing its own `unique-id`s.
 
 To support `did:earth`, any Cosmos application chain MAY add an entry in the Cosmos Chain Registry [[3]](#ref3). Each network, such as "mainnet" or "testnet" are independent entries in the registry with unique chain names and separate chain definition files, called`chain.json`. Each `chain.json` MUST provide all of the information required for connecting to that network. The `chain_name` MUST be used to as the `chainspace` string in the `did:earth` method. The `chain-id` contained in the `chain.json` will be used by resolvers to identify the correct Cosmos blockchain network to connect to.
 
