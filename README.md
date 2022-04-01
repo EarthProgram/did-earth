@@ -24,7 +24,7 @@ In the Cosmos ecosystem, **application chains** are sovereign blockchains built 
 
 To support **did:earth**, three modules must be operational: a chain registry, a namespace registry, and an asset module.
 
-```mermaid.js
+```mermaid
 classDiagram
     class ChainRegistry
     ChainRegistry : -chainDescriptors
@@ -195,6 +195,7 @@ Resources may be provided in-line or by secure reference. Inline resources are a
 Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
 
 Proposed properties for resource descriptors in the `LinkedResource` property:
+
 ```javascript
 {
 	"linkedResource": [{
@@ -238,8 +239,8 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 ### Elements for a W3C specification compliant DID document representation
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
-2. **`id`**: Target DID as base58-encoded string for 16 or 32 byte DID value with earth DID Method prefix `did:earth:<chainspace>:<namespace>:`.
-3. **`controller`** (optional): A list of fully qualified DID strings or one string. Contains one or more DIDs who can update this DIDdoc. All DIDs must exist.
+2. **`id`**: A **did:earth** DID as defined in this document. 
+3. **`controller`** (optional): A list of fully qualified DID strings or one string. Contains one or more DIDs whose verification relationships MUST be considered valid for this DID.
 4. **`verificationMethod`** (optional): A list of Verification Methods
 5. **`authentication`** (optional): A list of strings with key aliases or IDs
 6. **`assertionMethod`** (optional): A list of strings with key aliases or IDs
@@ -250,8 +251,8 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 11. **`alsoKnownAs`** (optional): A list of strings. A DID subject can have multiple identifiers for different purposes, or at different times. The assertion that two or more DIDs refer to the same DID subject can be made using the `alsoKnownAs` property.
 
 
-```
-Must be JSON-LD
+### JSON-LD
+All did:earth serializations MUST use json-ld.
 https://w3c.github.io/did-core/#json-ld
 
 The DID document, DID document data structures, and representation-specific entries map MUST be serialized to the JSON-LD representation according to the JSON representation production rules as defined in § 6.2 JSON.
