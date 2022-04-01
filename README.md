@@ -1,7 +1,10 @@
 # did:earth Method Specification
 This document defines the syntax, data model, and operations for the **did:earth** DID method.
 
-**Authors** : **Lohan Spies** &lt;<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a>&gt;, **Joe Andrieu** &lt;<a href="mailto:joe@legreq.com">joe@legreq.com</a>&gt;, and **Shaun Conway** &lt;<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>&gt;
+**Authors** : 
+* **Joe Andrieu** &lt;<a href="mailto:joe@legreq.com">joe@legreq.com</a>&gt;
+* **Lohan Spies** &lt;<a href="mailto:lohan.spies@ixo.world">lohan.spies@ixo.world</a>&gt;
+* **Shaun Conway** &lt;<a href="mailto:shaun.conway@ixo.world">shaun.conway@ixo.world</a>&gt;
 ## Abstract
 **did:earth** is an IID method designed to refer to Cosmos-compatible on-chain assets related to improving the planet earth in some manner.
 
@@ -182,61 +185,7 @@ did:earth:1:ixo:nft:7Tqg6BwSSWapxgUDm9KKgg#myresource
 ## DID documents
 A DID document associated with a **did:earth** DID is a set of data describing an on-chain asset. The representation of a **did:earth** DID document MUST meet the DID Core specifications [[5]](#ref5).
 
-### Additional Properties
-In addition to the properties defined in DID Core, the following properties are defined for **did:earth**.
-### Linked Resources
-
-The `linkedResource` property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
-
-Resources may be provided in-line or by secure reference. Inline resources are appropriate only for use cases that need to directly include the resource in the IID Document. In many cases, this is a privacy problem. However, for some use cases, resources must be specified for on-chain execution, which justifies the added bytes and potential disclosure risk. The resource descriptor provides for a flexible representation of various mime types, compression, and encoding, as required for the use.
-
-> Note: The below para could be moved to security considerations I think
-
-Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
-
-Proposed properties for resource descriptors in the `LinkedResource` property:
-
-```javascript
-{
-	"linkedResource": [{
-
-		"path"(optional): // IID Resource path for this resource in the asset namespace, e.g., /myResource.png
-
-			"id"(optional): // IID Reference ID for this resource, e.g., #myResource.png
-
-			"rel"(optional): // the relationship of this resource to the IID Asset
-
-			"type": "nft:ResourceDescriptor", // The JSON-LD type of this resource
-
-		"proof": [ // an array of proofs, any of which may be used
-			{
-				"type"(optional): "hash" | "hashgraph" | "hashset" // the form of proof used to verify the resource as authentic
-				"stage"(optional): "raw" | "compressed" | "encrypted" | "encoded" // the 
-				"value"(optional): hash | hashgraph | hashset, // the actual proof for this particular resource
-			}
-		],
-		"resourceFormat": media type, // the IANA media-type of the linked resource
-
-		"compression"(optional): "gzip" | "none", // the compression (performed on the raw resource) of an inline resource
-
-		"encryption": [open ended
-			for arbitrary extensibility
-		], // the encryption technique applied after compression and before encoding
-
-		"encoding"(optional): "native" | "multibase" | "string", // the encoding (after compression and encryption) of an inline resource; "native" means the inline resource is native JSON-LD with neither compression nor encryption
-
-		"endpoint"(optional): url, // a URL at which this resource can be retrieved before decrypting and decrompressing
-
-		"resource"(optional): "..."
-		a representation of the resource
-		for inline
-		distribution,
-		encoded as per "encoding"
-    }]
-}
-```
-
-### Elements for a W3C specification compliant DID document representation
+### Properties defined for all W3C specification compliant DID documents 
 
 1. **`@context`** (mandatory): The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
 2. **`id`**: A **did:earth** DID as defined in this document. 
@@ -250,30 +199,123 @@ Proposed properties for resource descriptors in the `LinkedResource` property:
 10. **`service`** (optional): A set of Service Endpoint maps
 11. **`alsoKnownAs`** (optional): A list of strings. A DID subject can have multiple identifiers for different purposes, or at different times. The assertion that two or more DIDs refer to the same DID subject can be made using the `alsoKnownAs` property.
 
+### Verification method
 
-### JSON-LD
-All did:earth serializations MUST use json-ld.
-https://w3c.github.io/did-core/#json-ld
+Verification methods are used to define how to authenticate / authorise interactions with a DID subject or delegates. Verification method is an OPTIONAL property.
 
-The DID document, DID document data structures, and representation-specific entries map MUST be serialized to the JSON-LD representation according to the JSON representation production rules as defined in § 6.2 JSON.
+1. **`id`** (string): A string with format `did:earth:impacthub:<chainspace>:<namespace>#<key-alias>`
+2. **`controller`**: A string with fully qualified DID. DID must exist.
+3. **`type`** (string)
+4. **`publicKeyJwk`** (`map[string,string]`, optional): A map representing a JSON Web Key that conforms to RFC7517 [[7]](#ref7). See definition of `publicKeyJwk` for additional constraints.
+5. **`publicKeyMultibase`** (optional): A base58-encoded string that conforms to a MULTIBASE [[8]](#ref8)
+encoded public key.
 
-In addition to using the JSON representation production rules, JSON-LD production MUST include the representation-specific @context entry. The serialized value of @context MUST be the JSON String https://www.w3.org/ns/did/v1, or a JSON Array where the first item is the JSON String https://www.w3.org/ns/did/v1 and the subsequent items are serialized according to the JSON representation production rules.
+**Note**: Verification method cannot contain both `publicKeyJwk` and `publicKeyMultibase` but must contain at least one of them.
+
+##### Example of Verification method in a DID document
+
+```jsonc
+{
+  "id": "did:earth:1:impacthub:nft:abc123#key-0",
+  "type": "JsonWebKey2020",
+  "controller": "did:earth:1:impacthub:nft:abc123",
+  "publicKeyJwk": {
+    "kty": "OKP",
+    // external (property name)
+    "crv": "Ed25519",
+    // external (property name)
+    "x": "VCpo2LMLhn6iWku8MKvSLg2ZAoC-nlOyPVQaO3FxVeQ"
+    // external (property name)
+  }
+}
 ```
 
-#### Additonal elements specific to the did:earth method DID document representation
-13. **`linkedResource`** (optional): is a new IID document property for specifying how to verify, and optionally retrieve, any and all resources necessary for the proper functioning of the on-chain asset. Like email attachments, LinkedResources provide for attaching arbitrary media to an onchain asset.
-14. **`transclude`** (optional): is a new IID document property for specifying where in an IID document to transclude a linked resource. If present, the value of this property MUST be one (or an array of more than one) Linked Resources that eventually dereferences to a raw JSON-LD object. The properties of that JSON-LD object will be injected into the current IID document, replacing the transclude property entirely. The properties of the transcluded JSON-LD MUST be transformed to their absolute representation using the object's `@context` value prior to transclusion. The associated linked resources MUST have a `rel` value of "extension" and a `mediaType` value of "application/ld-json"
-15. **`extension`** (optional): a type of Linked Resource. A JSON-LD extension of the current document. The RDF statements in the extension are to be included in the current IID document, where specified by a "transclude" property. For example, additional service endpoint definitions may be added in a linked resource. These endpoints can be verified as being associated with the IID. But only by those parties who secure the definitions through other privacy respecting mechanisms. This property standardizes how to verifiably move arbitrary RDF statements outside of the IID document context, to provide additional security and privacy.
-16. **`executableRight`** (optional): a type of Linked Resource. This resource is a machine-executable capability that can be invoked by the IID owner or its delegate, using cryptographic materials defined elsewhere in the IID document Verification Methods property.
+### Service
+
+Services can be defined in a DID document to express means of communicating with the DID subject or associated entities.
+
+1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to RFC3986 [[9]](#ref9). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. It has a follow formats: `<did-document-id>#<service-alias>` or `#<service-alias>`.
+2. **`type`** (string): The service type and its associated properties SHOULD be registered in the DID Specification Registries [[10]](#ref10)
+3. **`serviceEndpoint`** (strings): A string that conforms to the rules of RFC3986 [[9]](#ref9) for URIs, a map, or a set composed of a one or more strings that conform to the rules of
+RFC3986 for URIs and/or maps.
+
+
+### Additional Properties
+
+In addition to the properties defined in DID Core, the following properties are defined for **did:earth**.
+
+#### Linked Resources
+
+`linkedResource` (optional) : property provides a privacy-enabled way to attach digital resources to an on-chain asset. This is an optional property which may contain one or more resource descriptors in an array. This property provides the metadata required for accessing and using the specified resource, such as the type of resource, a proof to verify the resource, and a service endpoint for requesting and retrieving the resource.
+
+Resources may be provided in-line or by secure reference. Inline resources are appropriate only for use cases that need to directly include the resource in the IID Document. In many cases, this is a privacy problem. However, for some use cases, resources must be specified for on-chain execution, which justifies the added bytes and potential disclosure risk. The resource descriptor provides for a flexible representation of various mime types, compression, and encoding, as required for the use.
+
+> Note: The below para could be moved to security considerations I think
+
+Resources may be secured by specifying a `proofType` of hash or hashgraph. A hashgraph uses a merkle tree of hashes for external content associated with this asset. A resource descriptor of this type obscures both the type and the number of such resources, while allowing each such resource to be verifiably linked to the asset. It also provides for privacy-respecting verification of complete disclosure. Anyone who needs to prove they have all of the linked resources can compare their own hash graph of resources with the value stored in the IID Document. Note this anti-censorship technique requires a verifier to discover the type and nature of those resources on their own.
+
+Proposed properties for resource descriptors in the `LinkedResource` property:
+
+```javascript
+{
+ "linkedResource": [{
+
+  "path"(optional): // IID Resource path for this resource in the asset namespace, e.g., /myResource.png
+
+   "id"(optional): // IID Reference ID for this resource, e.g., #myResource.png
+
+   "rel"(optional): // the relationship of this resource to the IID Asset
+
+   "type": "nft:ResourceDescriptor", // The JSON-LD type of this resource
+
+  "proof": [ // an array of proofs, any of which may be used
+   {
+    "type"(optional): "hash" | "hashgraph" | "hashset" // the form of proof used to verify the resource as authentic
+    "stage"(optional): "raw" | "compressed" | "encrypted" | "encoded" // the 
+    "value"(optional): hash | hashgraph | hashset, // the actual proof for this particular resource
+   }
+  ],
+  "resourceFormat": media type, // the IANA media-type of the linked resource
+
+  "compression"(optional): "gzip" | "none", // the compression (performed on the raw resource) of an inline resource
+
+  "encryption": [open ended
+   for arbitrary extensibility
+  ], // the encryption technique applied after compression and before encoding
+
+  "encoding"(optional): "native" | "multibase" | "string", // the encoding (after compression and encryption) of an inline resource; "native" means the inline resource is native JSON-LD with neither compression nor encryption
+
+  "endpoint"(optional): url, // a URL at which this resource can be retrieved before decrypting and decrompressing
+
+  "resource"(optional): "..."
+  a representation of the resource
+  for inline
+  distribution,
+  encoded as per "encoding"
+    }]
+}
+```
+#### Transcludes
+**`transclude`** (optional): is a new IID document property for specifying where in an IID document to transclude a linked resource. If present, the value of this property MUST be one (or an array of more than one) Linked Resources that eventually dereferences to a raw JSON-LD object. The properties of that JSON-LD object will be injected into the current IID document, replacing the transclude property entirely. The properties of the transcluded JSON-LD MUST be transformed to their absolute representation using the object's `@context` value prior to transclusion. The associated linked resources MUST have a `rel` value of "extension" and a `mediaType` value of "application/ld-json"
+#### Extension
+**`extension`** (optional): a type of Linked Resource. A JSON-LD extension of the current document. The RDF statements in the extension are to be included in the current IID document, where specified by a "transclude" property. For example, additional service endpoint definitions may be added in a linked resource. These endpoints can be verified as being associated with the IID. But only by those parties who secure the definitions through other privacy respecting mechanisms. This property standardizes how to verifiably move arbitrary RDF statements outside of the IID document context, to provide additional security and privacy.
+#### Executable Rights
+**`executableRight`** (optional): a type of Linked Resource. This resource is a machine-executable capability that can be invoked by the IID owner or its delegate, using cryptographic materials defined elsewhere in the IID document Verification Methods property.
+#### Assertion
 17. **`assertion`** (optional): a rel value for a Linked Resource. Verifiable credentials, verified claims, claim tokens as described in NFT-RFC-008 [[6]](#ref6). This allows arbitrary, yet verifiable attestations to be made either about the asset or about the resources defined by IID references. The attributes represented in these claims can be retrieved through the token interface using a Query by Example. (graph query) mechanism.
-18. **`rel`** (optional): a property of Linked Resource. Defines the relationship of this resource to the IID asset. Known values include:
+#### Real
+**`rel`** (optional): a property of Linked Resource. Defines the relationship of this resource to the IID asset. Known values include:
      1. "evidence" -- The resource is evidence for the creation of the asset.
      2. "encodedRepresentation" -- The resource is a binary representation of the asset, interpretable by compatible software to display or interact with.
      3. "visualRepresentation" -- The resource is a visual representation of the asset
-19. **`accordedRight`** (optional): a type of relationship to a Linked Resource. Specifies the rights accorded to the IID owner, or its deligate, which may be executed by physical-world institutions or processes. Such as a digital driver's license according certain rights to drive, or a theater ticket according access to a show. The representation framework for such rights must be non-prescriptive, including both plain text statements of rights, e.g., "The controller of this IID is entitled to ...", or more rigorous and computationally evaluatable RDF statements, which might describe in great detail a range of benefits that accompany the basic rights of the token.
-20. **`displayName`** (optional): a property of Linked Resources that provide a brief textual label for display.
-21. **`displayDescription`** (optional): a property of Linked Resources that provide a longer text phrase for displaying additional detail about the asset.
-22. **`displayIcon`** (optional): a property of Linked Resources that provide a URL for an image asset to use when displaying the asset.
+#### Accorded Rights
+**`accordedRight`** (optional): a type of relationship to a Linked Resource. Specifies the rights accorded to the IID owner, or its deligate, which may be executed by physical-world institutions or processes. Such as a digital driver's license according certain rights to drive, or a theater ticket according access to a show. The representation framework for such rights must be non-prescriptive, including both plain text statements of rights, e.g., "The controller of this IID is entitled to ...", or more rigorous and computationally evaluatable RDF statements, which might describe in great detail a range of benefits that accompany the basic rights of the token.
+#### Display Name
+ **`displayName`** (optional): a property of Linked Resources that provide a brief textual label for display.
+#### Display Description
+**`displayDescription`** (optional): a property of Linked Resources that provide a longer text phrase for displaying additional detail about the asset.
+#### Display Icon
+**`displayIcon`** (optional): a property of Linked Resources that provide a URL for an image asset to use when displaying the asset.
 
 #### State format for DID documents on ledger
 
@@ -422,48 +464,15 @@ It is useful to note that Verification Methods can be anything\*, e.g., ed25519,
 }
 ```
 
-#### DID document metadata
 
-##### Example of DID document metadata
+### JSON-LD
 
-### Verification method
+All did:earth serializations MUST use json-ld.
+<https://w3c.github.io/did-core/#json-ld>
 
-Verification methods are used to define how to authenticate / authorise interactions with a DID subject or delegates. Verification method is an OPTIONAL property.
+The DID document, DID document data structures, and representation-specific entries map MUST be serialized to the JSON-LD representation according to the JSON representation production rules as defined in § 6.2 JSON.
 
-1. **`id`** (string): A string with format `did:earth:impacthub:<chainspace>:<namespace>#<key-alias>`
-2. **`controller`**: A string with fully qualified DID. DID must exist.
-3. **`type`** (string)
-4. **`publicKeyJwk`** (`map[string,string]`, optional): A map representing a JSON Web Key that conforms to RFC7517 [[7]](#ref7). See definition of `publicKeyJwk` for additional constraints.
-5. **`publicKeyMultibase`** (optional): A base58-encoded string that conforms to a MULTIBASE [[8]](#ref8)
-encoded public key.
-
-**Note**: Verification method cannot contain both `publicKeyJwk` and `publicKeyMultibase` but must contain at least one of them.
-
-##### Example of Verification method in a DID document
-
-```jsonc
-{
-  "id": "did:earth:1:impacthub:nft:abc123#key-0",
-  "type": "JsonWebKey2020",
-  "controller": "did:earth:1:impacthub:nft:abc123",
-  "publicKeyJwk": {
-    "kty": "OKP",
-    // external (property name)
-    "crv": "Ed25519",
-    // external (property name)
-    "x": "VCpo2LMLhn6iWku8MKvSLg2ZAoC-nlOyPVQaO3FxVeQ"
-    // external (property name)
-  }
-}
-```
-
-### Service
-Services can be defined in a DID document to express means of communicating with the DID subject or associated entities.
-
-1. **`id`** (string): The value of the `id` property for a Service MUST be a URI conforming to RFC3986 [[9]](#ref9). A conforming producer MUST NOT produce multiple service entries with the same ID. A conforming consumer MUST produce an error if it detects multiple service entries with the same ID. It has a follow formats: `<did-document-id>#<service-alias>` or `#<service-alias>`.
-2. **`type`** (string): The service type and its associated properties SHOULD be registered in the DID Specification Registries [[10]](#ref10)
-3. **`serviceEndpoint`** (strings): A string that conforms to the rules of RFC3986 [[9]](#ref9) for URIs, a map, or a set composed of a one or more strings that conform to the rules of
-RFC3986 for URIs and/or maps.
+In addition to using the JSON representation production rules, JSON-LD production MUST include the representation-specific @context entry. The serialized value of @context MUST be the JSON String <https://www.w3.org/ns/did/v1>, or a JSON Array where the first item is the JSON String <https://www.w3.org/ns/did/v1> and the subsequent items are serialized according to the JSON representation production rules.
 
 #### Example of Service in a DID document
 
@@ -475,8 +484,8 @@ RFC3986 for URIs and/or maps.
 }
 ```
 
-## DID transaction operations
-DID and associated documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See the draft method specification [[11]](#ref11) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
+## DID operations
+DID and DID  documents are managed by a Cosmos-SDK module that uses the gRPC communication protocol. See the draft method specification [[11]](#ref11) for details on how create, read, update and delete (CRUD) operations are handled in the Cosmos IID module.
 
 ### Create DID (Register)
 ```mermaid
